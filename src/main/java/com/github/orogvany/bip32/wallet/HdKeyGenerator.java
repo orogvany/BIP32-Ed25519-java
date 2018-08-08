@@ -100,8 +100,10 @@ public class HdKeyGenerator {
 
         HdKey publicKey = new HdKey();
         publicKey.setVersion(Hex.decode0x("0x0488B21E"));
-        publicKey.setDepth(parent.getPrivateKey().getDepth() + 1);
-        publicKey.setFingerprint(parent.getPublicKey().getFingerprintBytes());
+        publicKey.setDepth(parent.getPublicKey().getDepth() + 1);
+        //todo - getFingerprintBytes should probably be a method, instead of using
+        //parents fingerprint.
+        publicKey.setFingerprint(parent.getPrivateKey().getFingerprintBytes());
         publicKey.setChildNumber(childNumber);
         publicKey.setChainCode(masterChainCode);
         publicKey.setKeyData(Secp256k1.serP(point));
