@@ -1,9 +1,3 @@
-/**
- * Copyright (c) 2017-2018 The Semux Developers
- * <p>
- * Distributed under the MIT software license, see the accompanying file
- * LICENSE or https://opensource.org/licenses/mit-license.php
- */
 package com.github.orogvany.bip32.extern;
 /*
  * Copyright 2011 Google Inc.
