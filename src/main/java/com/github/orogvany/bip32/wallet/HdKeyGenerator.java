@@ -1,6 +1,7 @@
 package com.github.orogvany.bip32.wallet;
 
 import com.github.orogvany.bip32.Network;
+import com.github.orogvany.bip32.crypto.Hash;
 import com.github.orogvany.bip32.crypto.HdUtil;
 import com.github.orogvany.bip32.crypto.HmacSha512;
 import com.github.orogvany.bip32.crypto.Secp256k1;
@@ -84,12 +85,13 @@ public class HdKeyGenerator {
         byte[] masterChainCode = IR;
 
         byte[] childNumber = HdUtil.ser32(child);
+        byte[] fingerprint = HdUtil.getFingerprint(parent.getPrivateKey().getKeyData());
 
         HdKey privateKey = new HdKey();
         //todo - set version/network properly
         privateKey.setVersion(Hex.decode0x("0x0488ADE4"));
         privateKey.setDepth(parent.getPrivateKey().getDepth() + 1);
-        privateKey.setFingerprint(parent.getPrivateKey().getFingerprintBytes());
+        privateKey.setFingerprint(fingerprint);
         privateKey.setChildNumber(childNumber);
         privateKey.setChainCode(masterChainCode);
         privateKey.setKeyData(HdUtil.append(new byte[]{0}, HdUtil.ser256(childSecretKey)));
@@ -101,9 +103,15 @@ public class HdKeyGenerator {
         HdKey publicKey = new HdKey();
         publicKey.setVersion(Hex.decode0x("0x0488B21E"));
         publicKey.setDepth(parent.getPublicKey().getDepth() + 1);
-        //todo - getFingerprintBytes should probably be a method, instead of using
-        //parents fingerprint.
-        publicKey.setFingerprint(parent.getPrivateKey().getFingerprintBytes());
+
+        // can just use fingerprint, but let's use data from parent public key
+        byte[] pKd = parent.getPublicKey().getKeyData();
+        byte[] h160 = Hash.h160(pKd);
+        byte[] childFingerprint = new byte[]{h160[0], h160[1], h160[2], h160[3]};
+        //todo - we should be able to derive the child public key just from data
+        // in the key.  some more work to do here, then extract methods
+
+        publicKey.setFingerprint(childFingerprint);
         publicKey.setChildNumber(childNumber);
         publicKey.setChainCode(masterChainCode);
         publicKey.setKeyData(Secp256k1.serP(point));

@@ -2,10 +2,7 @@ package com.github.orogvany.bip32.wallet;
 
 import com.github.orogvany.bip32.crypto.Hash;
 import com.github.orogvany.bip32.crypto.HdUtil;
-import com.github.orogvany.bip32.crypto.Secp256k1;
-import com.github.orogvany.bip32.crypto.Sha256Hash;
 import com.github.orogvany.bip32.extern.Base58;
-import com.github.orogvany.bip32.extern.Hex;
 
 import java.util.Arrays;
 
@@ -62,13 +59,6 @@ public class HdKey {
         return chainCode;
     }
 
-    public byte[] getFingerprintBytes() {
-        byte[] point = Secp256k1.serP(Secp256k1.point(HdUtil.parse256(keyData)));
-        byte[] h160 = Hash.h160(point);
-        byte[] fingerprint = new byte[]{h160[0], h160[1], h160[2], h160[3]};
-        return fingerprint;
-    }
-
     public String getKey() {
         //todo - use builder/buffer
         byte[] key = HdUtil.append(version, new byte[]{(byte) depth});
@@ -76,7 +66,7 @@ public class HdKey {
         key = HdUtil.append(key, childNumber);
         key = HdUtil.append(key, chainCode);
         key = HdUtil.append(key, keyData);
-        byte[] checksum = Sha256Hash.hashTwice(key);
+        byte[] checksum = Hash.sha256Twice(key);
         key = HdUtil.append(key, Arrays.copyOfRange(checksum, 0, 4));
         return Base58.encode(key);
     }

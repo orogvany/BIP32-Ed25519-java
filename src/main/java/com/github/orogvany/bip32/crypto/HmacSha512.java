@@ -14,6 +14,13 @@ public class HmacSha512 {
 
     private static final String HMAC_SHA512 = "HmacSHA512";
 
+    /**
+     * hmac512
+     *
+     * @param key
+     * @param seed
+     * @return
+     */
     public static byte[] hmac512(byte[] key, byte[] seed) {
         try {
             Mac sha512_HMAC = Mac.getInstance(HMAC_SHA512);

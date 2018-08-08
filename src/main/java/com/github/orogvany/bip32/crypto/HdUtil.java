@@ -1,10 +1,6 @@
 package com.github.orogvany.bip32.crypto;
 
-import com.github.orogvany.bip32.exception.CryptoException;
-import org.bouncycastle.crypto.digests.RIPEMD160Digest;
-
 import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.util.Arrays;
 
 /**
@@ -17,17 +13,10 @@ public class HdUtil {
     /**
      * ser32(i): serialize a 32-bit unsigned integer i as a 4-byte sequence, most significant byte first.
      *
+     * Prefer long type to hold unsigned ints.
+     *
      * @return
      */
-    public static byte[] ser32(int i) {
-
-        byte[] ser = new byte[4];
-        ser[0] = (byte) (i >> 24);
-        ser[1] = (byte) (i >> 16);
-        ser[2] = (byte) (i >> 8);
-        ser[3] = (byte) (i);
-        return ser;
-    }
     public static byte[] ser32(long i) {
 
         byte[] ser = new byte[4];
@@ -83,6 +72,18 @@ public class HdUtil {
         System.arraycopy(a, 0, c, 0, a.length);
         System.arraycopy(b, 0, c, a.length, b.length);
         return c;
+    }
+
+    /**
+     * Get the fingerprint
+     * @param keyData
+     * @return
+     */
+    public static byte[] getFingerprint(byte[] keyData) {
+        byte[] point = Secp256k1.serP(Secp256k1.point(HdUtil.parse256(keyData)));
+        byte[] h160 = Hash.h160(point);
+        byte[] fingerprint = new byte[]{h160[0], h160[1], h160[2], h160[3]};
+        return fingerprint;
     }
 
 }

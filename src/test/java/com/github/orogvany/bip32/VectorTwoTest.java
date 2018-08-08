@@ -1,12 +1,10 @@
 package com.github.orogvany.bip32;
 
 import com.github.orogvany.bip32.wallet.HdAddress;
-import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
 
-import static com.github.orogvany.bip32.extern.Base58.decode;
 import static org.junit.Assert.assertEquals;
 
 public class VectorTwoTest extends BaseVectorTest {
