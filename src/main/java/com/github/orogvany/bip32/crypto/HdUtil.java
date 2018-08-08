@@ -1,27 +1,14 @@
 package com.github.orogvany.bip32.crypto;
 
-import com.github.orogvany.bip32.Pair;
-
 import java.math.BigInteger;
 import java.util.Arrays;
 
 /**
  * General Util class for defined functions.
- *
+ * <p>
  * These will find new homes as development progresses.
  */
 public class HdUtil {
-
-    /**
-     * point(p): returns the coordinate pair resulting from EC point multiplication (repeated application of the EC group operation) of the secp256k1 base point with the integer p.
-     *
-     * @param p
-     */
-    public static Pair point(int p) {
-
-        //todo
-        return null;
-    }
 
     /**
      * ser32(i): serialize a 32-bit unsigned integer i as a 4-byte sequence, most significant byte first.
@@ -30,8 +17,12 @@ public class HdUtil {
      */
     public static byte[] ser32(long i) {
 
-        //todo
-        return null;
+        byte[] ser = new byte[4];
+        ser[0] = (byte) (i >> 24);
+        ser[1] = (byte) (i >> 16);
+        ser[2] = (byte) (i >> 8);
+        ser[3] = (byte) (i);
+        return ser;
     }
 
     /**
@@ -55,17 +46,6 @@ public class HdUtil {
         }
 
         return ret;
-    }
-
-    /**
-     * serP(P): serializes the coordinate pair P = (x,y) as a byte sequence using SEC1's compressed form: (0x02 or 0x03) || ser256(x), where the header byte depends on the parity of the omitted y coordinate.
-     *
-     * @param p
-     * @return
-     */
-    public static byte[] serp(Pair p) {
-        //todo
-        return null;
     }
 
     /**

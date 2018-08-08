@@ -55,10 +55,14 @@ public class HdKey {
         this.keyData = keyData;
     }
 
+    public byte[] getChainCode() {
+        return chainCode;
+    }
+
     public byte[] getFingerprintBytes() {
         //todo
 //        return Hash.h160()
-        return null;
+        return new byte[]{0, 0, 0, 0};
     }
 
     public String getKey() {
@@ -71,5 +75,9 @@ public class HdKey {
         byte[] checksum = Sha256Hash.hashTwice(key);
         key = HdUtil.append(key, Arrays.copyOfRange(checksum, 0, 4));
         return Base58.encode(key);
+    }
+
+    public byte[] getData() {
+        return keyData;
     }
 }

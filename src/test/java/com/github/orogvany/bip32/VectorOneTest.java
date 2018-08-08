@@ -1,5 +1,6 @@
 package com.github.orogvany.bip32;
 
+import com.github.orogvany.bip32.wallet.HdAddress;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -27,6 +28,14 @@ public class VectorOneTest extends BaseVectorTest {
     public void testMasterNodePublicKey() {
         String expected = "xpub661MyMwAqRbcFtXgS5sYJABqqG9YLmC4Q1Rdap9gSE8NqtwybGhePY2gZ29ESFjqJoCu1Rupje8YtGqsefD265TMg7usUDFdp6W1EGMcet8";
         assertEquals(expected, masterNode.getPublicKey().getKey());
+    }
+
+    @Test
+    public void testChainPrivateKey() {
+        String expected = "xprv9uHRZZhk6KAJC1avXpDAp4MDc3sQKNxDiPvvkX8Br5ngLNv1TxvUxt4cV1rGL5hj6KCesnDYUhd7oWgT11eZG7XnxHrnYeSvkzY7d2bhkJ7";
+        HdAddress chain = hdKeyGenerator.getAddress(masterNode, 0);
+        assertEquals(expected, chain.getPrivateKey().getKey());
+
     }
 
     @Override
