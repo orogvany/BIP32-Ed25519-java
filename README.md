@@ -35,7 +35,7 @@ For maven use you can use jitpack
 ```
 <dependency>
     <groupId>com.github.orogvany</groupId>
-    <artifactId>semux-java-client</artifactId>
+    <artifactId>BIP32-Ed25519-java</artifactId>
     <version>{latest checkin hash}</version>
 </dependency>
 ```
