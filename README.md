@@ -12,3 +12,9 @@ Please note that code in com.github.orogvany.bip32.extern are temporary construc
 licenses (apache/MIT)
 
 They are designed to be replaced with open source libs as time permits.
+
+Current state:
+BIP32 implemented, still need to extend to ED25519.
+Going to use
+https://cardanolaunch.com/assets/Ed25519_BIP.pdf
+rather than chain.com proposal due to noted incompatibilities and side chain attack.
