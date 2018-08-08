@@ -18,3 +18,8 @@ BIP32 implemented, still need to extend to ED25519.
 Going to use
 https://cardanolaunch.com/assets/Ed25519_BIP.pdf
 rather than chain.com proposal due to noted incompatibilities and side chain attack.
+
+TODO:
+* BIP44 - abstraction for multiple coins heirarchy
+* BIP39 - Support for mnemonic codes (should be libs out there already)
+* ED25519 implementation
