@@ -1,6 +1,10 @@
 package com.github.orogvany.bip32.crypto;
 
+import com.github.orogvany.bip32.exception.CryptoException;
+import org.bouncycastle.crypto.digests.RIPEMD160Digest;
+
 import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.util.Arrays;
 
 /**
@@ -15,6 +19,15 @@ public class HdUtil {
      *
      * @return
      */
+    public static byte[] ser32(int i) {
+
+        byte[] ser = new byte[4];
+        ser[0] = (byte) (i >> 24);
+        ser[1] = (byte) (i >> 16);
+        ser[2] = (byte) (i >> 8);
+        ser[3] = (byte) (i);
+        return ser;
+    }
     public static byte[] ser32(long i) {
 
         byte[] ser = new byte[4];

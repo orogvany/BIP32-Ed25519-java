@@ -1,8 +1,11 @@
 package com.github.orogvany.bip32.wallet;
 
+import com.github.orogvany.bip32.crypto.Hash;
 import com.github.orogvany.bip32.crypto.HdUtil;
+import com.github.orogvany.bip32.crypto.Secp256k1;
 import com.github.orogvany.bip32.crypto.Sha256Hash;
 import com.github.orogvany.bip32.extern.Base58;
+import com.github.orogvany.bip32.extern.Hex;
 
 import java.util.Arrays;
 
@@ -13,13 +16,13 @@ import java.util.Arrays;
  */
 public class HdKey {
     private byte[] version;
-    private byte[] depth;
+    private int depth;
     private byte[] fingerprint;
     private byte[] childNumber;
     private byte[] chainCode;
     private byte[] keyData;
 
-    public HdKey(byte[] version, byte[] depth, byte[] fingerprint, byte[] childNumber, byte[] chainCode, byte[] keyData) {
+    public HdKey(byte[] version, int depth, byte[] fingerprint, byte[] childNumber, byte[] chainCode, byte[] keyData) {
         this.version = version;
         this.depth = depth;
         this.fingerprint = fingerprint;
@@ -35,7 +38,7 @@ public class HdKey {
         this.version = version;
     }
 
-    public void setDepth(byte[] depth) {
+    public void setDepth(int depth) {
         this.depth = depth;
     }
 
@@ -60,14 +63,15 @@ public class HdKey {
     }
 
     public byte[] getFingerprintBytes() {
-        //todo
-//        return Hash.h160()
-        return new byte[]{0, 0, 0, 0};
+        byte[] point = Secp256k1.serP(Secp256k1.point(HdUtil.parse256(keyData)));
+        byte[] h160 = Hash.h160(point);
+        byte[] fingerprint = new byte[]{h160[0], h160[1], h160[2], h160[3]};
+        return fingerprint;
     }
 
     public String getKey() {
         //todo - use builder/buffer
-        byte[] key = HdUtil.append(version, depth);
+        byte[] key = HdUtil.append(version, new byte[]{(byte) depth});
         key = HdUtil.append(key, fingerprint);
         key = HdUtil.append(key, childNumber);
         key = HdUtil.append(key, chainCode);
@@ -79,5 +83,9 @@ public class HdKey {
 
     public byte[] getData() {
         return keyData;
+    }
+
+    public int getDepth() {
+        return depth;
     }
 }

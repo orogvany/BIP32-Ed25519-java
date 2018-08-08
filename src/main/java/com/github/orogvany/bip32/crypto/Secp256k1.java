@@ -27,4 +27,8 @@ public class Secp256k1 {
     public static ECPoint point(BigInteger p) {
         return SECP.getG().multiply(p);
     }
+
+    public static BigInteger getN() {
+        return SECP.getN();
+    }
 }

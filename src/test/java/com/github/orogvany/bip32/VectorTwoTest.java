@@ -1,9 +1,12 @@
 package com.github.orogvany.bip32;
 
+import com.github.orogvany.bip32.wallet.HdAddress;
+import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
 
+import static com.github.orogvany.bip32.extern.Base58.decode;
 import static org.junit.Assert.assertEquals;
 
 public class VectorTwoTest extends BaseVectorTest {
@@ -23,6 +26,16 @@ public class VectorTwoTest extends BaseVectorTest {
     public void testMasterNodePublicKey() {
         String expected = "xpub661MyMwAqRbcFW31YEwpkMuc5THy2PSt5bDMsktWQcFF8syAmRUapSCGu8ED9W6oDMSgv6Zz8idoc4a6mr8BDzTJY47LJhkJ8UB7WEGuduB";
         assertEquals(expected, masterNode.getPublicKey().getKey());
+    }
+
+    @Test
+    public void testChainPrivateKey() {
+        String expected = "xprv9vHkqa6EV4sPZHYqZznhT2NPtPCjKuDKGY38FBWLvgaDx45zo9WQRUT3dKYnjwih2yJD9mkrocEZXo1ex8G81dwSM1fwqWpWkeS3v86pgKt";
+        System.out.println("expected:" + Hex.toHexString(decode(expected)));
+
+        HdAddress chain = hdKeyGenerator.getAddress(masterNode, 0, false);
+        assertEquals(expected, chain.getPrivateKey().getKey());
+
     }
 
     @Override

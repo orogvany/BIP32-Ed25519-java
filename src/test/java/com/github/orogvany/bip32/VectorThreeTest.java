@@ -1,5 +1,6 @@
 package com.github.orogvany.bip32;
 
+import com.github.orogvany.bip32.wallet.HdAddress;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -23,6 +24,13 @@ public class VectorThreeTest extends BaseVectorTest {
     public void testMasterNodePublicKey() {
         String expected = "xpub661MyMwAqRbcEZVB4dScxMAdx6d4nFc9nvyvH3v4gJL378CSRZiYmhRoP7mBy6gSPSCYk6SzXPTf3ND1cZAceL7SfJ1Z3GC8vBgp2epUt13";
         assertEquals(expected, masterNode.getPublicKey().getKey());
+    }
+
+    @Test
+    public void testChainPrivateKey() {
+        String expected = "xprv9uPDJpEQgRQfDcW7BkF7eTya6RPxXeJCqCJGHuCJ4GiRVLzkTXBAJMu2qaMWPrS7AANYqdq6vcBcBUdJCVVFceUvJFjaPdGZ2y9WACViL4L";
+        HdAddress chain = hdKeyGenerator.getAddress(masterNode, 0, true);
+        assertEquals(expected, chain.getPrivateKey().getKey());
     }
 
     @Override

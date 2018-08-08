@@ -21,5 +21,4 @@ public class Sha256Hash {
             throw new CryptoException("Unable to find SHA-256", e);
         }
     }
-
 }
