@@ -88,4 +88,8 @@ public class HdKey {
     public int getDepth() {
         return depth;
     }
+
+    public byte[] getKeyData() {
+        return keyData;
+    }
 }

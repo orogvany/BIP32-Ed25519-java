@@ -34,11 +34,30 @@ public class VectorOneTest extends BaseVectorTest {
     }
 
     @Test
-    public void testChainPrivateKey() {
+    public void testChain0HPrivateKey() {
         //this is hardened
         String expected = "xprv9uHRZZhk6KAJC1avXpDAp4MDc3sQKNxDiPvvkX8Br5ngLNv1TxvUxt4cV1rGL5hj6KCesnDYUhd7oWgT11eZG7XnxHrnYeSvkzY7d2bhkJ7";
         System.out.println( Hex.toHexString(decode(expected)));
         HdAddress chain = hdKeyGenerator.getAddress(masterNode, 0, true);
+        assertEquals(expected, chain.getPrivateKey().getKey());
+    }
+
+    @Test
+    public void testChain0H1PrivateKey() {
+        String expected = "xprv9wTYmMFdV23N2TdNG573QoEsfRrWKQgWeibmLntzniatZvR9BmLnvSxqu53Kw1UmYPxLgboyZQaXwTCg8MSY3H2EU4pWcQDnRnrVA1xe8fs";
+        System.out.println( Hex.toHexString(decode(expected)));
+        HdAddress chain = hdKeyGenerator.getAddress(masterNode, 0, true);
+        chain = hdKeyGenerator.getAddress(chain,1, false);
+        assertEquals(expected, chain.getPrivateKey().getKey());
+    }
+
+    @Test
+    public void testChain0H12HPrivateKey() {
+        String expected = "xprv9z4pot5VBttmtdRTWfWQmoH1taj2axGVzFqSb8C9xaxKymcFzXBDptWmT7FwuEzG3ryjH4ktypQSAewRiNMjANTtpgP4mLTj34bhnZX7UiM";
+        System.out.println( Hex.toHexString(decode(expected)));
+        HdAddress chain = hdKeyGenerator.getAddress(masterNode, 0, true);
+        chain = hdKeyGenerator.getAddress(chain,1, false);
+        chain = hdKeyGenerator.getAddress(chain,2, true);
         assertEquals(expected, chain.getPrivateKey().getKey());
     }
 

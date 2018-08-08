@@ -4,7 +4,6 @@ import com.github.orogvany.bip32.Network;
 import com.github.orogvany.bip32.crypto.HdUtil;
 import com.github.orogvany.bip32.crypto.HmacSha512;
 import com.github.orogvany.bip32.crypto.Secp256k1;
-import com.github.orogvany.bip32.extern.Base58;
 import com.github.orogvany.bip32.extern.Hex;
 import org.bouncycastle.math.ec.ECPoint;
 
@@ -54,19 +53,24 @@ public class HdKeyGenerator {
     }
 
     public HdAddress getAddress(HdAddress parent, long child, boolean isHardened) {
-        int h = 0x80000000;
         if (isHardened) {
             child += 0x80000000;
         }
 
         byte[] xChain = parent.getPrivateKey().getChainCode();
-        byte[] key = parent.getPublicKey().getData();
-        byte[] xPubKey = HdUtil.append(key, HdUtil.ser32(child));
-        ///backwards ?
-        byte[] I = HmacSha512.hmac512(xPubKey, xChain);
+        ///backwards hmac order in method?
+        byte[] I;
         if (isHardened) {
-            //todo
             //If so (hardened child): let I = HMAC-SHA512(Key = cpar, Data = 0x00 || ser256(kpar) || ser32(i)). (Note: The 0x00 pads the private key to make it 33 bytes long.)
+            BigInteger kpar = HdUtil.parse256(parent.getPrivateKey().getKeyData());
+            byte[] data = HdUtil.append(new byte[]{0}, HdUtil.ser256(kpar));
+            data = HdUtil.append(data, HdUtil.ser32(child));
+            I = HmacSha512.hmac512(data, xChain);
+        } else {
+            //I = HMAC-SHA512(Key = cpar, Data = serP(point(kpar)) || ser32(i))
+            //just use public key
+            byte[] key = parent.getPublicKey().getData();
+            byte[] xPubKey = HdUtil.append(key, HdUtil.ser32(child));
             I = HmacSha512.hmac512(xPubKey, xChain);
         }
 

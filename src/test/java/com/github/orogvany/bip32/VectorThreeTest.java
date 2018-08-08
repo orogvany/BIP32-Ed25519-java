@@ -27,7 +27,7 @@ public class VectorThreeTest extends BaseVectorTest {
     }
 
     @Test
-    public void testChainPrivateKey() {
+    public void testChain0HPrivateKey() {
         String expected = "xprv9uPDJpEQgRQfDcW7BkF7eTya6RPxXeJCqCJGHuCJ4GiRVLzkTXBAJMu2qaMWPrS7AANYqdq6vcBcBUdJCVVFceUvJFjaPdGZ2y9WACViL4L";
         HdAddress chain = hdKeyGenerator.getAddress(masterNode, 0, true);
         assertEquals(expected, chain.getPrivateKey().getKey());

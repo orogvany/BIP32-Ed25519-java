@@ -29,11 +29,17 @@ public class VectorTwoTest extends BaseVectorTest {
     }
 
     @Test
-    public void testChainPrivateKey() {
+    public void testChain0PrivateKey() {
         String expected = "xprv9vHkqa6EV4sPZHYqZznhT2NPtPCjKuDKGY38FBWLvgaDx45zo9WQRUT3dKYnjwih2yJD9mkrocEZXo1ex8G81dwSM1fwqWpWkeS3v86pgKt";
-        System.out.println("expected:" + Hex.toHexString(decode(expected)));
-
         HdAddress chain = hdKeyGenerator.getAddress(masterNode, 0, false);
+        assertEquals(expected, chain.getPrivateKey().getKey());
+    }
+
+    @Test
+    public void testChain0_2147483647HPrivateKey() {
+        String expected = "xprv9wSp6B7kry3Vj9m1zSnLvN3xH8RdsPP1Mh7fAaR7aRLcQMKTR2vidYEeEg2mUCTAwCd6vnxVrcjfy2kRgVsFawNzmjuHc2YmYRmagcEPdU9";
+        HdAddress chain = hdKeyGenerator.getAddress(masterNode, 0, false);
+        chain = hdKeyGenerator.getAddress(chain, 2147483647, true);
         assertEquals(expected, chain.getPrivateKey().getKey());
 
     }
