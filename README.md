@@ -24,3 +24,29 @@ TODO:
 * BIP39 - Support for mnemonic codes (should be libs out there already)
 * ED25519 implementation
 * A much needed code refactor/cleanup
+
+## Compiling
+```
+mvn clean install
+```
+
+For maven use you can use jitpack
+
+```
+<dependency>
+    <groupId>com.github.orogvany</groupId>
+    <artifactId>semux-java-client</artifactId>
+    <version>{latest checkin hash}</version>
+</dependency>
+```
+
+Jitpack repo
+
+```
+<repositories>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
+```
