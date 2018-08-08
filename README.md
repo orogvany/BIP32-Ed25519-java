@@ -23,3 +23,4 @@ TODO:
 * BIP44 - abstraction for multiple coins heirarchy
 * BIP39 - Support for mnemonic codes (should be libs out there already)
 * ED25519 implementation
+* A much needed code refactor/cleanup
