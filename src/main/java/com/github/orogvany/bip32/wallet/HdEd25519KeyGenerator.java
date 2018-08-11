@@ -7,10 +7,12 @@
 package com.github.orogvany.bip32.wallet;
 
 import com.github.orogvany.bip32.Network;
+import com.github.orogvany.bip32.crypto.BitUtil;
 import com.github.orogvany.bip32.crypto.Hash;
 import com.github.orogvany.bip32.crypto.HdUtil;
 import com.github.orogvany.bip32.crypto.HmacSha512;
 import com.github.orogvany.bip32.crypto.Secp256k1;
+import com.github.orogvany.bip32.exception.CryptoException;
 import com.github.orogvany.bip32.extern.Hex;
 import org.bouncycastle.math.ec.ECPoint;
 
@@ -18,7 +20,11 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.util.Arrays;
 
-public class HdKeyGenerator {
+/**
+ * We'll get this working a separate implementation, then extract a base class.
+ *
+ */
+public class HdEd25519KeyGenerator {
 
     public HdAddress getAddressFromSeed(String seed, Network network) throws UnsupportedEncodingException {
         byte[] seedBytes = Hex.decode(seed);
@@ -29,8 +35,39 @@ public class HdKeyGenerator {
         byte[] IL = Arrays.copyOfRange(I, 0, 32);
         byte[] IR = Arrays.copyOfRange(I, 32, 64);
 
+        //
+        // Ed25519 specific
+        // if the third highest bit of the last byte of IL is not zero, discard
+        boolean ilCheck = BitUtil.checkBit(IL[IL.length - 1], 3);
+        if (ilCheck) {
+            throw new CryptoException("This seed cannot be used");
+        }
+
+        byte firstByte = IL[0];
+        //the lowest 3 bits of the first byte of IL is cleared
+        firstByte = BitUtil.unsetBit(firstByte, 8);
+        firstByte = BitUtil.unsetBit(firstByte, 7);
+        firstByte = BitUtil.unsetBit(firstByte, 6);
+        IL[0] = firstByte;
+
+        byte lastByte = IL[IL.length - 1];
+        // the highest bit of the last byte is cleared
+        lastByte = BitUtil.unsetBit(lastByte, 1);
+        // the second highest bit of the last byte is set
+        lastByte = BitUtil.setBit(lastByte, 2);
+        IL[IL.length - 1] = lastByte;
+
+        //IL,IR is the extended root private key.
+
+        //A <- [IL]B is the root public key after encoding -- TODO ? whut?
+
         BigInteger masterSecretKey = HdUtil.parse256(IL);
+        //c <- H256(0x01 || I) is the root chain code
         byte[] masterChainCode = IR;
+
+        //
+        // end Ed25519 specific
+
 
         //todo - In case IL is 0 or ≥n, the master key is invalid.
 
@@ -41,7 +78,7 @@ public class HdKeyGenerator {
         privateKey.setFingerprint(new byte[]{0, 0, 0, 0});
         privateKey.setChildNumber(new byte[]{0, 0, 0, 0});
         privateKey.setChainCode(masterChainCode);
-        privateKey.setKeyData(HdUtil.append(new byte[]{0}, IL));
+        privateKey.setKeyData(HdUtil.append(new byte[]{0}, HdUtil.ser256(masterSecretKey)));
 
         HdAddress address = new HdAddress();
         address.setPrivateKey(privateKey);
@@ -58,6 +95,7 @@ public class HdKeyGenerator {
 
         return address;
     }
+
 
     public HdAddress getAddress(HdAddress parent, long child, boolean isHardened) {
         if (isHardened) {

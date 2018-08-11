@@ -18,7 +18,6 @@ public abstract class BaseVectorTest {
 
     public BaseVectorTest() throws UnsupportedEncodingException {
         masterNode = hdKeyGenerator.getAddressFromSeed(getSeed(), null);
-
     }
 
     protected abstract String getSeed();
