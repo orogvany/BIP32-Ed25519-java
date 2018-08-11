@@ -33,49 +33,53 @@ public class HdEd25519KeyGenerator {
     public HdAddress<HdEd25519Key> getAddressFromSeed(String seed, Network network) throws UnsupportedEncodingException {
         byte[] seedBytes = Hex.decode(seed);
 
-        byte[] I = HmacSha512.hmac512(seedBytes, "Bitcoin seed".getBytes("UTF-8"));
+        byte[] K = HmacSha512.hmac512(seedBytes, "Bitcoin seed".getBytes("UTF-8"));
+        //supposed to use sha512 instead of hmac for whatever reason.
+        //if supposed to be used after master secret, will need to rename method/refactor
+        K = Hash.sha512(seedBytes);
 
         //split into left/right
-        byte[] IL = Arrays.copyOfRange(I, 0, 32);
-        byte[] IR = Arrays.copyOfRange(I, 32, 64);
+        byte[] KL = Arrays.copyOfRange(K, 0, 32);
+        byte[] KR = Arrays.copyOfRange(K, 32, 64);
         HdEd25519Key privateKey = new HdEd25519Key();
         HdEd25519Key publicKey = new HdEd25519Key();
 
         //
         // Ed25519 specific
         // if the third highest bit of the last byte of IL is not zero, discard
-        boolean ilCheck = BitUtil.checkBit(IL[IL.length - 1], 3);
-        if (ilCheck) {
+        boolean klCheck = BitUtil.checkBit(KL[KL.length - 1], 3);
+        if (klCheck) {
             throw new CryptoException("This seed cannot be used");
         }
 
-        byte firstByte = IL[0];
+        byte firstByte = KL[0];
         //the lowest 3 bits of the first byte of IL is cleared
         firstByte = BitUtil.unsetBit(firstByte, 8);
         firstByte = BitUtil.unsetBit(firstByte, 7);
         firstByte = BitUtil.unsetBit(firstByte, 6);
-        IL[0] = firstByte;
+        KL[0] = firstByte;
 
-        byte lastByte = IL[IL.length - 1];
+        byte lastByte = KL[KL.length - 1];
         // the highest bit of the last byte is cleared
         lastByte = BitUtil.unsetBit(lastByte, 1);
         // the second highest bit of the last byte is set
         lastByte = BitUtil.setBit(lastByte, 2);
-        IL[IL.length - 1] = lastByte;
+        KL[KL.length - 1] = lastByte;
 
 
-        //A <- [IL]B is the root public key after encoding
-        // Interpret IL as little-endian int and perform a fixed-base scalar multiplication
-        BigInteger ILBigInt = HdUtil.parse256LE(IL);
+        //A <- [KL]B is the root public key after encoding
+        // Interpret KL as little-endian int and perform a fixed-base scalar multiplication
+        BigInteger ILBigInt = HdUtil.parse256LE(KL);
         GroupElement rootPublicKey = spec.getB().scalarMultiply(ILBigInt.toByteArray());
 
 
-        BigInteger masterSecretKey = HdUtil.parse256(IL);
-        //c <- H256(0x01 || I) is the root chain code
-        byte[] masterChainCode = Hash.sha256(HdUtil.append(new byte[]{1}, I));
+        //TODO - this is noise, but concentrating on ed25519 pub/priv key
+        BigInteger masterSecretKey = HdUtil.parse256(KL);
+        //c <- H256(0x01 || K) is the root chain code
+        byte[] masterChainCode = Hash.sha256(HdUtil.append(new byte[]{0x01}, K));
 
         //IL,IR is the extended root private key.
-        privateKey.setEd25519Key(HdUtil.append(IL, IR));
+        privateKey.setEd25519Key(HdUtil.append(KL, KR));
         publicKey.setEd25519Key(rootPublicKey.toByteArray());
 
         //

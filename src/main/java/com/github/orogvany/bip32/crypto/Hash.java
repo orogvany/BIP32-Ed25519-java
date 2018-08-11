@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2018 orogvany
- *
+ * <p>
  * Distributed under the MIT software license, see the accompanying file
  * LICENSE or https://opensource.org/licenses/mit-license.php
  */
@@ -29,6 +29,21 @@ public class Hash {
             return digest.digest(input);
         } catch (NoSuchAlgorithmException e) {
             throw new CryptoException("Unable to find SHA-256", e);
+        }
+    }
+
+    /**
+     * SHA-512
+     *
+     * @param input
+     * @return
+     */
+    public static byte[] sha512(byte[] input) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-512");
+            return digest.digest(input);
+        } catch (NoSuchAlgorithmException e) {
+            throw new CryptoException("Unable to find SHA-512", e);
         }
     }
 
