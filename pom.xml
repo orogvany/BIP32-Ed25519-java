@@ -19,6 +19,12 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+    <repositories>
+        <repository>
+            <id>bintray</id>
+            <url>https://dl.bintray.com/terl/lazysodium-maven</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <!-- SLF4J logging framework -->
@@ -42,9 +48,23 @@
             <artifactId>bcprov-jdk15on</artifactId>
             <version>1.60</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.7</version>
+        </dependency>
+        <dependency>
+            <groupId>net.i2p.crypto</groupId>
+            <artifactId>eddsa</artifactId>
+            <version>0.3.0</version>
+        </dependency>
 
-
-
+        <dependency>
+            <groupId>com.goterl.lazycode</groupId>
+            <artifactId>lazysodium-java</artifactId>
+            <version>3.2.0</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

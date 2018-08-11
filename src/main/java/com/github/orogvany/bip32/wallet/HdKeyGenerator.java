@@ -20,9 +20,14 @@ import java.util.Arrays;
 
 public class HdKeyGenerator {
 
-    public HdAddress getAddressFromSeed(String seed, Network network) throws UnsupportedEncodingException {
-        byte[] seedBytes = Hex.decode(seed);
+    public HdAddress<HdKey> getAddressFromSeed(String seed, Network network) throws UnsupportedEncodingException {
+        HdAddress<HdKey> address = new HdAddress<>();
+        HdKey publicKey = new HdKey();
+        HdKey privateKey = new HdKey();
+        address.setPrivateKey(privateKey);
+        address.setPublicKey(publicKey);
 
+        byte[] seedBytes = Hex.decode(seed);
         byte[] I = HmacSha512.hmac512(seedBytes, "Bitcoin seed".getBytes("UTF-8"));
 
         //split into left/right
@@ -34,7 +39,6 @@ public class HdKeyGenerator {
 
         //todo - In case IL is 0 or ≥n, the master key is invalid.
 
-        HdKey privateKey = new HdKey();
         //todo - set version/network properly
         privateKey.setVersion(Hex.decode0x("0x0488ADE4"));
         privateKey.setDepth(0);
@@ -43,23 +47,25 @@ public class HdKeyGenerator {
         privateKey.setChainCode(masterChainCode);
         privateKey.setKeyData(HdUtil.append(new byte[]{0}, IL));
 
-        HdAddress address = new HdAddress();
-        address.setPrivateKey(privateKey);
         ECPoint point = Secp256k1.point(masterSecretKey);
 
-        HdKey publicKey = new HdKey();
         publicKey.setVersion(Hex.decode0x("0x0488B21E"));
         publicKey.setDepth(0);
         publicKey.setFingerprint(new byte[]{0, 0, 0, 0});
         publicKey.setChildNumber(new byte[]{0, 0, 0, 0});
         publicKey.setChainCode(masterChainCode);
         publicKey.setKeyData(Secp256k1.serP(point));
-        address.setPublicKey(publicKey);
 
         return address;
     }
 
-    public HdAddress getAddress(HdAddress parent, long child, boolean isHardened) {
+    public HdAddress<HdKey> getAddress(HdAddress parent, long child, boolean isHardened) {
+        HdAddress<HdKey> address = new HdAddress<>();
+        HdKey privateKey = new HdKey();
+        HdKey publicKey = new HdKey();
+        address.setPrivateKey(privateKey);
+        address.setPublicKey(publicKey);
+
         if (isHardened) {
             child += 0x80000000;
         }
@@ -93,7 +99,6 @@ public class HdKeyGenerator {
         byte[] childNumber = HdUtil.ser32(child);
         byte[] fingerprint = HdUtil.getFingerprint(parent.getPrivateKey().getKeyData());
 
-        HdKey privateKey = new HdKey();
         //todo - set version/network properly
         privateKey.setVersion(Hex.decode0x("0x0488ADE4"));
         privateKey.setDepth(parent.getPrivateKey().getDepth() + 1);
@@ -102,11 +107,8 @@ public class HdKeyGenerator {
         privateKey.setChainCode(masterChainCode);
         privateKey.setKeyData(HdUtil.append(new byte[]{0}, HdUtil.ser256(childSecretKey)));
 
-        HdAddress address = new HdAddress();
-        address.setPrivateKey(privateKey);
         ECPoint point = Secp256k1.point(childSecretKey);
 
-        HdKey publicKey = new HdKey();
         publicKey.setVersion(Hex.decode0x("0x0488B21E"));
         publicKey.setDepth(parent.getPublicKey().getDepth() + 1);
 
@@ -121,7 +123,6 @@ public class HdKeyGenerator {
         publicKey.setChildNumber(childNumber);
         publicKey.setChainCode(masterChainCode);
         publicKey.setKeyData(Secp256k1.serP(point));
-        address.setPublicKey(publicKey);
 
         return address;
     }

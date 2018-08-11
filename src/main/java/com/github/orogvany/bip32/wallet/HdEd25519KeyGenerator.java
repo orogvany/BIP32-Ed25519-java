@@ -14,6 +14,9 @@ import com.github.orogvany.bip32.crypto.HmacSha512;
 import com.github.orogvany.bip32.crypto.Secp256k1;
 import com.github.orogvany.bip32.exception.CryptoException;
 import com.github.orogvany.bip32.extern.Hex;
+import net.i2p.crypto.eddsa.math.GroupElement;
+import net.i2p.crypto.eddsa.spec.EdDSANamedCurveSpec;
+import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.io.UnsupportedEncodingException;
@@ -22,11 +25,12 @@ import java.util.Arrays;
 
 /**
  * We'll get this working a separate implementation, then extract a base class.
- *
  */
 public class HdEd25519KeyGenerator {
 
-    public HdAddress getAddressFromSeed(String seed, Network network) throws UnsupportedEncodingException {
+    private static EdDSANamedCurveSpec spec = EdDSANamedCurveTable.getByName("Ed25519");
+
+    public HdAddress<HdEd25519Key> getAddressFromSeed(String seed, Network network) throws UnsupportedEncodingException {
         byte[] seedBytes = Hex.decode(seed);
 
         byte[] I = HmacSha512.hmac512(seedBytes, "Bitcoin seed".getBytes("UTF-8"));
@@ -34,6 +38,8 @@ public class HdEd25519KeyGenerator {
         //split into left/right
         byte[] IL = Arrays.copyOfRange(I, 0, 32);
         byte[] IR = Arrays.copyOfRange(I, 32, 64);
+        HdEd25519Key privateKey = new HdEd25519Key();
+        HdEd25519Key publicKey = new HdEd25519Key();
 
         //
         // Ed25519 specific
@@ -57,21 +63,24 @@ public class HdEd25519KeyGenerator {
         lastByte = BitUtil.setBit(lastByte, 2);
         IL[IL.length - 1] = lastByte;
 
-        //IL,IR is the extended root private key.
 
-        //A <- [IL]B is the root public key after encoding -- TODO ? whut?
+        //A <- [IL]B is the root public key after encoding
+        // Interpret IL as little-endian int and perform a fixed-base scalar multiplication
+        BigInteger ILBigInt = HdUtil.parse256LE(IL);
+        GroupElement rootPublicKey = spec.getB().scalarMultiply(ILBigInt.toByteArray());
+
 
         BigInteger masterSecretKey = HdUtil.parse256(IL);
         //c <- H256(0x01 || I) is the root chain code
-        byte[] masterChainCode = IR;
+        byte[] masterChainCode = Hash.sha256(HdUtil.append(new byte[]{1}, I));
+
+        //IL,IR is the extended root private key.
+        privateKey.setEd25519Key(HdUtil.append(IL, IR));
+        publicKey.setEd25519Key(rootPublicKey.toByteArray());
 
         //
         // end Ed25519 specific
 
-
-        //todo - In case IL is 0 or ≥n, the master key is invalid.
-
-        HdKey privateKey = new HdKey();
         //todo - set version/network properly
         privateKey.setVersion(Hex.decode0x("0x0488ADE4"));
         privateKey.setDepth(0);
@@ -84,7 +93,6 @@ public class HdEd25519KeyGenerator {
         address.setPrivateKey(privateKey);
         ECPoint point = Secp256k1.point(masterSecretKey);
 
-        HdKey publicKey = new HdKey();
         publicKey.setVersion(Hex.decode0x("0x0488B21E"));
         publicKey.setDepth(0);
         publicKey.setFingerprint(new byte[]{0, 0, 0, 0});

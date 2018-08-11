@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2018 orogvany
- *
+ * <p>
  * Distributed under the MIT software license, see the accompanying file
  * LICENSE or https://opensource.org/licenses/mit-license.php
  */
@@ -9,24 +9,24 @@ package com.github.orogvany.bip32.wallet;
 /**
  * An HD pub/private key
  */
-public class HdAddress {
+public class HdAddress<T extends HdKey> {
 
-    private HdKey privateKey;
-    private HdKey publicKey;
+    private T privateKey;
+    private T publicKey;
 
-    public HdKey getPrivateKey() {
+    public T getPrivateKey() {
         return privateKey;
     }
 
-    public void setPrivateKey(HdKey privateKey) {
+    public void setPrivateKey(T privateKey) {
         this.privateKey = privateKey;
     }
 
-    public HdKey getPublicKey() {
+    public T getPublicKey() {
         return publicKey;
     }
 
-    public void setPublicKey(HdKey publicKey) {
+    public void setPublicKey(T publicKey) {
         this.publicKey = publicKey;
     }
 }
