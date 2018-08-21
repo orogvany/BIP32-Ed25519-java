@@ -14,10 +14,8 @@ licenses (apache/MIT)
 They are designed to be replaced with open source libs as time permits.
 
 Current state:
-BIP32 implemented, still need to extend to ED25519.
-Going to use
-https://cardanolaunch.com/assets/Ed25519_BIP.pdf
-rather than chain.com proposal due to noted incompatibilities and side chain attack.
+* BIP32 implemented, Ed25519 works for master key
+* Using https://cardanolaunch.com/assets/Ed25519_BIP.pdf rather than chain.com proposal due to noted incompatibilities and side chain attack.
 
 TODO:
 * BIP44 - abstraction for multiple coins heirarchy

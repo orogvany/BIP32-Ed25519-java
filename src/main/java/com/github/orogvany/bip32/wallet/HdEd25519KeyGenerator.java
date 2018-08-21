@@ -17,6 +17,7 @@ import com.github.orogvany.bip32.extern.Hex;
 import net.i2p.crypto.eddsa.math.GroupElement;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveSpec;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
+import org.apache.commons.lang3.ArrayUtils;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.io.UnsupportedEncodingException;
@@ -70,7 +71,11 @@ public class HdEd25519KeyGenerator {
         //A <- [KL]B is the root public key after encoding
         // Interpret KL as little-endian int and perform a fixed-base scalar multiplication
         BigInteger ILBigInt = HdUtil.parse256LE(KL);
-        GroupElement rootPublicKey = spec.getB().scalarMultiply(ILBigInt.toByteArray());
+        byte[] ilEncoded = ILBigInt.toByteArray();
+        ArrayUtils.reverse(ilEncoded);
+
+        KL = ilEncoded;
+        GroupElement rootPublicKey = spec.getB().scalarMultiply(KL);
 
 
         //TODO - this is noise, but concentrating on ed25519 pub/priv key
@@ -110,6 +115,8 @@ public class HdEd25519KeyGenerator {
 
 
     public HdAddress getAddress(HdAddress parent, long child, boolean isHardened) {
+
+        //todo - implement
         if (isHardened) {
             child += 0x80000000;
         }
