@@ -55,7 +55,7 @@ public class HdEd25519KeyGeneratorTest {
         Assert.assertTrue(verified);
     }
 
-    public static byte[] sign(EdDSAPrivateKey sk, byte[] message) {
+    private static byte[] sign(EdDSAPrivateKey sk, byte[] message) {
         try {
             byte[] sig;
 
@@ -69,7 +69,7 @@ public class HdEd25519KeyGeneratorTest {
         }
     }
 
-    public static boolean verify(byte[] message, byte[] signature, EdDSAPublicKey pubKey) {
+    private static boolean verify(byte[] message, byte[] signature, EdDSAPublicKey pubKey) {
         if (message != null && signature != null) {
             try {
 
@@ -79,11 +79,8 @@ public class HdEd25519KeyGeneratorTest {
             } catch (Exception e) {
                 System.err.println(e.getMessage());
             }
-
         }
 
         return false;
     }
-
-
 }
