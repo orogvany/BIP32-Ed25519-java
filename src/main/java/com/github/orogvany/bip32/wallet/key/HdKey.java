@@ -9,6 +9,7 @@ package com.github.orogvany.bip32.wallet.key;
 import com.github.orogvany.bip32.crypto.Hash;
 import com.github.orogvany.bip32.crypto.HdUtil;
 import com.github.orogvany.bip32.extern.Base58;
+import com.github.orogvany.bip32.extern.Hex;
 
 import java.util.Arrays;
 
@@ -74,6 +75,7 @@ public class HdKey {
         key = HdUtil.append(key, keyData);
         byte[] checksum = Hash.sha256Twice(key);
         key = HdUtil.append(key, Arrays.copyOfRange(checksum, 0, 4));
+//        System.out.println(Hex.encode(key));
         return Base58.encode(key);
     }
 

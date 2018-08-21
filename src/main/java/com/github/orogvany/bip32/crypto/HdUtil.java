@@ -13,13 +13,12 @@ import java.util.Arrays;
 
 /**
  * General Util class for defined functions.
- * <p>
- * These will find new homes as development progresses.
  */
 public class HdUtil {
 
     /**
-     * ser32(i): serialize a 32-bit unsigned integer i as a 4-byte sequence, most significant byte first.
+     * ser32(i): serialize a 32-bit unsigned integer i as a 4-byte sequence,
+     * most significant byte first.
      * <p>
      * Prefer long type to hold unsigned ints.
      *
@@ -36,7 +35,8 @@ public class HdUtil {
     }
 
     /**
-     * ser256(p): serializes the integer p as a 32-byte sequence, most significant byte first.
+     * ser256(p): serializes the integer p as a 32-byte sequence, most
+     * significant byte first.
      *
      * @param p big integer
      * @return 32 byte sequence
@@ -59,7 +59,8 @@ public class HdUtil {
     }
 
     /**
-     * ser256(p): serializes the integer p as a 32-byte sequence, least significant byte first.
+     * ser256(p): serializes the integer p as a 32-byte sequence, least
+     * significant byte first.
      *
      * @param p big integer
      * @return 32 byte sequence
@@ -85,7 +86,8 @@ public class HdUtil {
     }
 
     /**
-     * parse256(p): interprets a 32-byte sequence as a 256-bit number, most significant byte first.
+     * parse256(p): interprets a 32-byte sequence as a 256-bit number, most
+     * significant byte first.
      *
      * @param p bytes
      * @return 256 bit number
@@ -95,7 +97,8 @@ public class HdUtil {
     }
 
     /**
-     * parse256LE(p): interprets a 32-byte sequence as a 256-bit number, least significant byte first
+     * parse256LE(p): interprets a 32-byte sequence as a 256-bit number, least
+     * significant byte first
      *
      * @param p bytes
      * @return 256 bit number

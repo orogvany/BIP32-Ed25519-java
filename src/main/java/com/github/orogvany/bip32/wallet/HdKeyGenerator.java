@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2018 orogvany
- *
+ * <p>
  * Distributed under the MIT software license, see the accompanying file
  * LICENSE or https://opensource.org/licenses/mit-license.php
  */
@@ -11,6 +11,7 @@ import com.github.orogvany.bip32.crypto.Hash;
 import com.github.orogvany.bip32.crypto.HdUtil;
 import com.github.orogvany.bip32.crypto.HmacSha512;
 import com.github.orogvany.bip32.crypto.Secp256k1;
+import com.github.orogvany.bip32.exception.CryptoException;
 import com.github.orogvany.bip32.extern.Hex;
 import com.github.orogvany.bip32.wallet.key.HdPrivateKey;
 import com.github.orogvany.bip32.wallet.key.HdPublicKey;
@@ -24,6 +25,7 @@ public class HdKeyGenerator {
 
     public HdAddress getAddressFromSeed(String seed, Network network) throws UnsupportedEncodingException {
         HdAddress<HdPrivateKey, HdPublicKey> address = new HdAddress<>();
+
         HdPublicKey publicKey = new HdPublicKey();
         HdPrivateKey privateKey = new HdPrivateKey();
         address.setPrivateKey(privateKey);
@@ -59,6 +61,43 @@ public class HdKeyGenerator {
 
         return address;
     }
+
+    public HdPublicKey getPublicKey(HdPublicKey parent, long child, boolean isHardened) {
+        if (isHardened) {
+            throw new CryptoException("Cannot derive child public keys from hardened keys");
+        }
+
+        byte[] key = parent.getData();
+        byte[] data = HdUtil.append(key, HdUtil.ser32(child));
+        //I = HMAC-SHA512(Key = cpar, Data = serP(point(kpar)) || ser32(i))
+        byte[] I = HmacSha512.hmac512(data, parent.getChainCode());
+
+        byte[] IL = Arrays.copyOfRange(I, 0, 32);
+        byte[] IR = Arrays.copyOfRange(I, 32, 64);
+
+        HdPublicKey publicKey = new HdPublicKey();
+
+        publicKey.setVersion(parent.getVersion());
+        publicKey.setDepth(parent.getDepth() + 1);
+
+        byte[] pKd = parent.getKeyData();
+        byte[] h160 = Hash.h160(pKd);
+        byte[] childFingerprint = new byte[]{h160[0], h160[1], h160[2], h160[3]};
+
+        ECPoint point = Secp256k1.point(HdUtil.parse256(IL));
+        point = point.add(Secp256k1.deserP(parent.getKeyData()));
+        byte[] childKey = Secp256k1.serP(point);
+
+        //TODO - In case parse256(IL) ≥ n or Ki is the point at infinity, the resulting key is invalid, and one should proceed with the next value for i.
+        publicKey.setFingerprint(childFingerprint);
+        publicKey.setChildNumber(HdUtil.ser32(child));
+        publicKey.setChainCode(IR);
+        publicKey.setKeyData(childKey);
+
+        return publicKey;
+
+    }
+
 
     public HdAddress getAddress(HdAddress parent, long child, boolean isHardened) {
         HdAddress<HdPrivateKey, HdPublicKey> address = new HdAddress<>();
