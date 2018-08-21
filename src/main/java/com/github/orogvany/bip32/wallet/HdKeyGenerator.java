@@ -39,15 +39,18 @@ public class HdKeyGenerator {
         byte[] IR = Arrays.copyOfRange(I, 32, 64);
 
         BigInteger masterSecretKey = HdUtil.parse256(IL);
-        byte[] masterChainCode = IR;
 
-        //todo - In case IL is 0 or ≥n, the master key is invalid.
+        //In case IL is 0 or ≥n, the master key is invalid.
+        if(masterSecretKey.compareTo(BigInteger.ZERO) == 0 || masterSecretKey.compareTo(Secp256k1.getN()) > 0)
+        {
+            throw new CryptoException("The master key is invalid");
+        }
 
         privateKey.setVersion(network.getPrivateKeyVersion());
         privateKey.setDepth(0);
         privateKey.setFingerprint(new byte[]{0, 0, 0, 0});
         privateKey.setChildNumber(new byte[]{0, 0, 0, 0});
-        privateKey.setChainCode(masterChainCode);
+        privateKey.setChainCode(IR);
         privateKey.setKeyData(HdUtil.append(new byte[]{0}, IL));
 
         ECPoint point = Secp256k1.point(masterSecretKey);
@@ -56,7 +59,7 @@ public class HdKeyGenerator {
         publicKey.setDepth(0);
         publicKey.setFingerprint(new byte[]{0, 0, 0, 0});
         publicKey.setChildNumber(new byte[]{0, 0, 0, 0});
-        publicKey.setChainCode(masterChainCode);
+        publicKey.setChainCode(IR);
         publicKey.setKeyData(Secp256k1.serP(point));
 
         return address;
@@ -84,20 +87,24 @@ public class HdKeyGenerator {
         byte[] h160 = Hash.h160(pKd);
         byte[] childFingerprint = new byte[]{h160[0], h160[1], h160[2], h160[3]};
 
-        ECPoint point = Secp256k1.point(HdUtil.parse256(IL));
+        BigInteger ILBigInt = HdUtil.parse256(IL);
+        ECPoint point = Secp256k1.point(ILBigInt);
         point = point.add(Secp256k1.deserP(parent.getKeyData()));
+
+        if (ILBigInt.compareTo(Secp256k1.getN()) > 0 || point.isInfinity()) {
+            throw new CryptoException("This key is invalid, should proceed to next key");
+//            return getPublicKey(parent, child+1, isHardened);
+        }
+
         byte[] childKey = Secp256k1.serP(point);
 
-        //TODO - In case parse256(IL) ≥ n or Ki is the point at infinity, the resulting key is invalid, and one should proceed with the next value for i.
         publicKey.setFingerprint(childFingerprint);
         publicKey.setChildNumber(HdUtil.ser32(child));
         publicKey.setChainCode(IR);
         publicKey.setKeyData(childKey);
 
         return publicKey;
-
     }
-
 
     public HdAddress getAddress(HdAddress parent, long child, boolean isHardened) {
         HdAddress<HdPrivateKey, HdPublicKey> address = new HdAddress<>();
@@ -133,8 +140,7 @@ public class HdKeyGenerator {
         //The returned child key ki is parse256(IL) + kpar (mod n).
         BigInteger parse256 = HdUtil.parse256(IL);
         BigInteger kpar = HdUtil.parse256(parent.getPrivateKey().getData());
-        BigInteger childSecretKey = HdUtil.parse256(IL).add(kpar).mod(Secp256k1.getN());
-        byte[] masterChainCode = IR;
+        BigInteger childSecretKey = parse256.add(kpar).mod(Secp256k1.getN());
 
         byte[] childNumber = HdUtil.ser32(child);
         byte[] fingerprint = HdUtil.getFingerprint(parent.getPrivateKey().getKeyData());
@@ -143,7 +149,7 @@ public class HdKeyGenerator {
         privateKey.setDepth(parent.getPrivateKey().getDepth() + 1);
         privateKey.setFingerprint(fingerprint);
         privateKey.setChildNumber(childNumber);
-        privateKey.setChainCode(masterChainCode);
+        privateKey.setChainCode(IR);
         privateKey.setKeyData(HdUtil.append(new byte[]{0}, HdUtil.ser256(childSecretKey)));
 
         ECPoint point = Secp256k1.point(childSecretKey);
@@ -155,12 +161,10 @@ public class HdKeyGenerator {
         byte[] pKd = parent.getPublicKey().getKeyData();
         byte[] h160 = Hash.h160(pKd);
         byte[] childFingerprint = new byte[]{h160[0], h160[1], h160[2], h160[3]};
-        //todo - we should be able to derive the child public key just from data
-        // in the key.  some more work to do here, then extract methods
 
         publicKey.setFingerprint(childFingerprint);
         publicKey.setChildNumber(childNumber);
-        publicKey.setChainCode(masterChainCode);
+        publicKey.setChainCode(IR);
         publicKey.setKeyData(Secp256k1.serP(point));
 
         return address;
