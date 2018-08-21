@@ -1,5 +1,8 @@
 package com.github.orogvany.bip32.wallet;
 
+/**
+ * An HD key for Ed25519
+ */
 public class HdEd25519Key extends HdKey {
     private byte[] ed25519Key;
 

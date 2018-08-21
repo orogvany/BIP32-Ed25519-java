@@ -20,8 +20,8 @@ public class Hash {
     /**
      * SHA-256
      *
-     * @param input
-     * @return
+     * @param input input
+     * @return sha256(input)
      */
     public static byte[] sha256(byte[] input) {
         try {
@@ -35,8 +35,8 @@ public class Hash {
     /**
      * SHA-512
      *
-     * @param input
-     * @return
+     * @param input input
+     * @return sha512(input)
      */
     public static byte[] sha512(byte[] input) {
         try {
@@ -47,6 +47,12 @@ public class Hash {
         }
     }
 
+    /**
+     * sha256(sha256(bytes))
+     *
+     * @param bytes input
+     * @return sha'd twice result
+     */
     public static byte[] sha256Twice(byte[] bytes) {
         return sha256Twice(bytes, 0, bytes.length);
     }
@@ -65,8 +71,8 @@ public class Hash {
     /**
      * H160
      *
-     * @param input
-     * @return
+     * @param input input
+     * @return h160(input)
      */
     public static byte[] h160(byte[] input) {
         byte[] sha256 = sha256(input);

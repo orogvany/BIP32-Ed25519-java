@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2018 orogvany
- *
+ * <p>
  * Distributed under the MIT software license, see the accompanying file
  * LICENSE or https://opensource.org/licenses/mit-license.php
  */
@@ -23,9 +23,9 @@ public class HmacSha512 {
     /**
      * hmac512
      *
-     * @param key
-     * @param seed
-     * @return
+     * @param key key
+     * @param seed seed
+     * @return hmac512
      */
     public static byte[] hmac512(byte[] key, byte[] seed) {
         try {

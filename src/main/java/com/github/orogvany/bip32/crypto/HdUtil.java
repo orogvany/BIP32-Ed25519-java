@@ -23,7 +23,7 @@ public class HdUtil {
      * <p>
      * Prefer long type to hold unsigned ints.
      *
-     * @return
+     * @return ser32(i)
      */
     public static byte[] ser32(long i) {
 
@@ -107,7 +107,6 @@ public class HdUtil {
         return new BigInteger(1, copy);
     }
 
-
     /**
      * Append two byte arrays
      *
@@ -125,15 +124,13 @@ public class HdUtil {
     /**
      * Get the fingerprint
      *
-     * @param keyData
-     * @return
+     * @param keyData key data
+     * @return fingerprint
      */
     public static byte[] getFingerprint(byte[] keyData) {
         byte[] point = Secp256k1.serP(Secp256k1.point(HdUtil.parse256(keyData)));
         byte[] h160 = Hash.h160(point);
-        byte[] fingerprint = new byte[]{h160[0], h160[1], h160[2], h160[3]};
-        return fingerprint;
+        return new byte[]{h160[0], h160[1], h160[2], h160[3]};
     }
-
 }
 
