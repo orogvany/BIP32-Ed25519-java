@@ -10,9 +10,7 @@ public class BitUtil {
      * @return true if set
      */
     public static boolean checkBit(byte data, int index) {
-
         byte bit = (byte) ((data >> (8 - index)) & 1);
-
         return bit == 0x1;
     }
 
@@ -39,6 +37,4 @@ public class BitUtil {
         data &= ~(1 << (8 - index));
         return data;
     }
-
-
 }

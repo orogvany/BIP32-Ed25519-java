@@ -3,10 +3,12 @@ package com.github.orogvany.bip32;
 import com.github.orogvany.bip32.exception.CryptoException;
 import com.github.orogvany.bip32.extern.Hex;
 import com.github.orogvany.bip32.wallet.HdAddress;
-import com.github.orogvany.bip32.wallet.HdEd25519Key;
 import com.github.orogvany.bip32.wallet.HdEd25519KeyGenerator;
-import com.github.orogvany.bip32.wallet.HdKey;
 import com.github.orogvany.bip32.wallet.HdKeyGenerator;
+import com.github.orogvany.bip32.wallet.key.HdPrivateKey;
+import com.github.orogvany.bip32.wallet.key.HdPublicKey;
+import com.github.orogvany.bip32.wallet.key.ed25519.HdEd25519PrivateKey;
+import com.github.orogvany.bip32.wallet.key.ed25519.HdEd25519PublicKey;
 import net.i2p.crypto.eddsa.EdDSAEngine;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 import net.i2p.crypto.eddsa.EdDSAPublicKey;
@@ -29,10 +31,10 @@ public class HdEd25519KeyGeneratorTest {
 
     @Test
     public void testKeyGeneration() throws UnsupportedEncodingException, InvalidKeySpecException {
-        HdAddress<HdKey> generalMaster = generalGenerator.getAddressFromSeed("feeed1", null);
+        HdAddress<HdPrivateKey, HdPublicKey> generalMaster = generalGenerator.getAddressFromSeed("feeed1", Network.mainnet);
         byte[] masterSecret = generalMaster.getPrivateKey().getKeyData();
 
-        HdAddress<HdEd25519Key> address = hdKeyGenerator.getAddressFromSeed(Hex.encode(masterSecret), null);
+        HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> address = hdKeyGenerator.getAddressFromSeed(Hex.encode(masterSecret), Network.mainnet);
 
         EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName("ed25519");
 

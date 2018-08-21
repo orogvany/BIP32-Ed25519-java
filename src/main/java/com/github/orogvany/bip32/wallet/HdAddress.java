@@ -6,27 +6,30 @@
  */
 package com.github.orogvany.bip32.wallet;
 
+import com.github.orogvany.bip32.wallet.key.HdPrivateKey;
+import com.github.orogvany.bip32.wallet.key.HdPublicKey;
+
 /**
  * An HD pub/private key
  */
-public class HdAddress<T extends HdKey> {
+public class HdAddress<S extends HdPrivateKey, P extends HdPublicKey> {
 
-    private T privateKey;
-    private T publicKey;
+    private S privateKey;
+    private P publicKey;
 
-    public T getPrivateKey() {
+    public S getPrivateKey() {
         return privateKey;
     }
 
-    public void setPrivateKey(T privateKey) {
+    public void setPrivateKey(S privateKey) {
         this.privateKey = privateKey;
     }
 
-    public T getPublicKey() {
+    public P getPublicKey() {
         return publicKey;
     }
 
-    public void setPublicKey(T publicKey) {
+    public void setPublicKey(P publicKey) {
         this.publicKey = publicKey;
     }
 }

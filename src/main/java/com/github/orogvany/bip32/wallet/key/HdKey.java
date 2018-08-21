@@ -4,7 +4,7 @@
  * Distributed under the MIT software license, see the accompanying file
  * LICENSE or https://opensource.org/licenses/mit-license.php
  */
-package com.github.orogvany.bip32.wallet;
+package com.github.orogvany.bip32.wallet.key;
 
 import com.github.orogvany.bip32.crypto.Hash;
 import com.github.orogvany.bip32.crypto.HdUtil;
@@ -87,5 +87,9 @@ public class HdKey {
 
     public byte[] getKeyData() {
         return keyData;
+    }
+
+    public byte[] getVersion() {
+        return version;
     }
 }

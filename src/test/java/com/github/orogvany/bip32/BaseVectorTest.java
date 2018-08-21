@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2018 orogvany
- *
+ * <p>
  * Distributed under the MIT software license, see the accompanying file
  * LICENSE or https://opensource.org/licenses/mit-license.php
  */
@@ -17,7 +17,7 @@ public abstract class BaseVectorTest {
     public HdKeyGenerator hdKeyGenerator = new HdKeyGenerator();
 
     public BaseVectorTest() throws UnsupportedEncodingException {
-        masterNode = hdKeyGenerator.getAddressFromSeed(getSeed(), null);
+        masterNode = hdKeyGenerator.getAddressFromSeed(getSeed(), Network.mainnet);
     }
 
     protected abstract String getSeed();

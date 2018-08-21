@@ -12,6 +12,8 @@ import com.github.orogvany.bip32.crypto.HdUtil;
 import com.github.orogvany.bip32.crypto.HmacSha512;
 import com.github.orogvany.bip32.crypto.Secp256k1;
 import com.github.orogvany.bip32.extern.Hex;
+import com.github.orogvany.bip32.wallet.key.HdPrivateKey;
+import com.github.orogvany.bip32.wallet.key.HdPublicKey;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.io.UnsupportedEncodingException;
@@ -20,10 +22,10 @@ import java.util.Arrays;
 
 public class HdKeyGenerator {
 
-    public HdAddress<HdKey> getAddressFromSeed(String seed, Network network) throws UnsupportedEncodingException {
-        HdAddress<HdKey> address = new HdAddress<>();
-        HdKey publicKey = new HdKey();
-        HdKey privateKey = new HdKey();
+    public HdAddress getAddressFromSeed(String seed, Network network) throws UnsupportedEncodingException {
+        HdAddress<HdPrivateKey, HdPublicKey> address = new HdAddress<>();
+        HdPublicKey publicKey = new HdPublicKey();
+        HdPrivateKey privateKey = new HdPrivateKey();
         address.setPrivateKey(privateKey);
         address.setPublicKey(publicKey);
 
@@ -39,8 +41,7 @@ public class HdKeyGenerator {
 
         //todo - In case IL is 0 or ≥n, the master key is invalid.
 
-        //todo - set version/network properly
-        privateKey.setVersion(Hex.decode0x("0x0488ADE4"));
+        privateKey.setVersion(network.getPrivateKeyVersion());
         privateKey.setDepth(0);
         privateKey.setFingerprint(new byte[]{0, 0, 0, 0});
         privateKey.setChildNumber(new byte[]{0, 0, 0, 0});
@@ -49,7 +50,7 @@ public class HdKeyGenerator {
 
         ECPoint point = Secp256k1.point(masterSecretKey);
 
-        publicKey.setVersion(Hex.decode0x("0x0488B21E"));
+        publicKey.setVersion(network.getPublicKeyVersion());
         publicKey.setDepth(0);
         publicKey.setFingerprint(new byte[]{0, 0, 0, 0});
         publicKey.setChildNumber(new byte[]{0, 0, 0, 0});
@@ -59,10 +60,10 @@ public class HdKeyGenerator {
         return address;
     }
 
-    public HdAddress<HdKey> getAddress(HdAddress parent, long child, boolean isHardened) {
-        HdAddress<HdKey> address = new HdAddress<>();
-        HdKey privateKey = new HdKey();
-        HdKey publicKey = new HdKey();
+    public HdAddress getAddress(HdAddress parent, long child, boolean isHardened) {
+        HdAddress<HdPrivateKey, HdPublicKey> address = new HdAddress<>();
+        HdPrivateKey privateKey = new HdPrivateKey();
+        HdPublicKey publicKey = new HdPublicKey();
         address.setPrivateKey(privateKey);
         address.setPublicKey(publicKey);
 
@@ -99,8 +100,7 @@ public class HdKeyGenerator {
         byte[] childNumber = HdUtil.ser32(child);
         byte[] fingerprint = HdUtil.getFingerprint(parent.getPrivateKey().getKeyData());
 
-        //todo - set version/network properly
-        privateKey.setVersion(Hex.decode0x("0x0488ADE4"));
+        privateKey.setVersion(parent.getPrivateKey().getVersion());
         privateKey.setDepth(parent.getPrivateKey().getDepth() + 1);
         privateKey.setFingerprint(fingerprint);
         privateKey.setChildNumber(childNumber);
@@ -109,7 +109,7 @@ public class HdKeyGenerator {
 
         ECPoint point = Secp256k1.point(childSecretKey);
 
-        publicKey.setVersion(Hex.decode0x("0x0488B21E"));
+        publicKey.setVersion(parent.getPublicKey().getVersion());
         publicKey.setDepth(parent.getPublicKey().getDepth() + 1);
 
         // can just use fingerprint, but let's use data from parent public key

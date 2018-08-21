@@ -14,6 +14,10 @@ import com.github.orogvany.bip32.crypto.HmacSha512;
 import com.github.orogvany.bip32.crypto.Secp256k1;
 import com.github.orogvany.bip32.exception.CryptoException;
 import com.github.orogvany.bip32.extern.Hex;
+import com.github.orogvany.bip32.wallet.key.HdPrivateKey;
+import com.github.orogvany.bip32.wallet.key.HdPublicKey;
+import com.github.orogvany.bip32.wallet.key.ed25519.HdEd25519PrivateKey;
+import com.github.orogvany.bip32.wallet.key.ed25519.HdEd25519PublicKey;
 import net.i2p.crypto.eddsa.math.GroupElement;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveSpec;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
@@ -29,9 +33,9 @@ import java.util.Arrays;
  */
 public class HdEd25519KeyGenerator {
 
-    private static EdDSANamedCurveSpec spec = EdDSANamedCurveTable.getByName("Ed25519");
+    private static final EdDSANamedCurveSpec spec = EdDSANamedCurveTable.getByName("Ed25519");
 
-    public HdAddress<HdEd25519Key> getAddressFromSeed(String seed, Network network) throws UnsupportedEncodingException {
+    public HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> getAddressFromSeed(String seed, Network network) throws UnsupportedEncodingException {
         byte[] seedBytes = Hex.decode(seed);
 
         byte[] K = HmacSha512.hmac512(seedBytes, "Bitcoin seed".getBytes("UTF-8"));
@@ -42,8 +46,8 @@ public class HdEd25519KeyGenerator {
         //split into left/right
         byte[] KL = Arrays.copyOfRange(K, 0, 32);
         byte[] KR = Arrays.copyOfRange(K, 32, 64);
-        HdEd25519Key privateKey = new HdEd25519Key();
-        HdEd25519Key publicKey = new HdEd25519Key();
+        HdEd25519PrivateKey privateKey = new HdEd25519PrivateKey();
+        HdEd25519PublicKey publicKey = new HdEd25519PublicKey();
 
         //
         // Ed25519 specific
@@ -67,7 +71,6 @@ public class HdEd25519KeyGenerator {
         lastByte = BitUtil.setBit(lastByte, 2);
         KL[KL.length - 1] = lastByte;
 
-
         //A <- [KL]B is the root public key after encoding
         // Interpret KL as little-endian int and perform a fixed-base scalar multiplication
         BigInteger ILBigInt = HdUtil.parse256LE(KL);
@@ -90,8 +93,7 @@ public class HdEd25519KeyGenerator {
         //
         // end Ed25519 specific
 
-        //todo - set version/network properly
-        privateKey.setVersion(Hex.decode0x("0x0488ADE4"));
+        privateKey.setVersion(network.getPrivateKeyVersion());
         privateKey.setDepth(0);
         privateKey.setFingerprint(new byte[]{0, 0, 0, 0});
         privateKey.setChildNumber(new byte[]{0, 0, 0, 0});
@@ -102,7 +104,7 @@ public class HdEd25519KeyGenerator {
         address.setPrivateKey(privateKey);
         ECPoint point = Secp256k1.point(masterSecretKey);
 
-        publicKey.setVersion(Hex.decode0x("0x0488B21E"));
+        publicKey.setVersion(network.getPublicKeyVersion());
         publicKey.setDepth(0);
         publicKey.setFingerprint(new byte[]{0, 0, 0, 0});
         publicKey.setChildNumber(new byte[]{0, 0, 0, 0});
@@ -150,9 +152,9 @@ public class HdEd25519KeyGenerator {
         byte[] childNumber = HdUtil.ser32(child);
         byte[] fingerprint = HdUtil.getFingerprint(parent.getPrivateKey().getKeyData());
 
-        HdKey privateKey = new HdKey();
+        HdPrivateKey privateKey = new HdPrivateKey();
         //todo - set version/network properly
-        privateKey.setVersion(Hex.decode0x("0x0488ADE4"));
+        privateKey.setVersion(parent.getPrivateKey().getVersion());
         privateKey.setDepth(parent.getPrivateKey().getDepth() + 1);
         privateKey.setFingerprint(fingerprint);
         privateKey.setChildNumber(childNumber);
@@ -163,8 +165,8 @@ public class HdEd25519KeyGenerator {
         address.setPrivateKey(privateKey);
         ECPoint point = Secp256k1.point(childSecretKey);
 
-        HdKey publicKey = new HdKey();
-        publicKey.setVersion(Hex.decode0x("0x0488B21E"));
+        HdPublicKey publicKey = new HdPublicKey();
+        publicKey.setVersion(parent.getPublicKey().getVersion());
         publicKey.setDepth(parent.getPublicKey().getDepth() + 1);
 
         // can just use fingerprint, but let's use data from parent public key
