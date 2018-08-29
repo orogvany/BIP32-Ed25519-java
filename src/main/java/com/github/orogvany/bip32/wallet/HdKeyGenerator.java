@@ -205,11 +205,13 @@ public class HdKeyGenerator {
                 publicKey.setPublicKey(publicKey.getKeyData());
                 break;
             case ed25519:
+                //todo - can move this into above
                 privateKey.setPrivateKey(IL);
                 h160 = Hash.h160(parent.getPublicKey().getPublicKey());
                 childFingerprint = new byte[]{h160[0], h160[1], h160[2], h160[3]};
                 publicKey.setFingerprint(childFingerprint);
                 privateKey.setFingerprint(childFingerprint);
+                privateKey.setKeyData(HdUtil.append(new byte[]{0}, IL));
 
                 EdDSAPrivateKey sk = new EdDSAPrivateKey(new EdDSAPrivateKeySpec(IL, ED25519SPEC));
                 EdDSAPublicKey pk = new EdDSAPublicKey(new EdDSAPublicKeySpec(sk.getA(), sk.getParams()));
