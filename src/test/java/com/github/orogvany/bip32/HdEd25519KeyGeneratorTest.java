@@ -8,10 +8,10 @@ package com.github.orogvany.bip32;
 
 import com.github.orogvany.bip32.exception.CryptoException;
 import com.github.orogvany.bip32.extern.Hex;
+import com.github.orogvany.bip32.wallet.CoinType;
 import com.github.orogvany.bip32.wallet.HdAddress;
 import com.github.orogvany.bip32.wallet.HdEd25519KeyGenerator;
 import com.github.orogvany.bip32.wallet.HdKeyGenerator;
-import com.github.orogvany.bip32.wallet.key.Curve;
 import com.github.orogvany.bip32.wallet.key.HdPrivateKey;
 import com.github.orogvany.bip32.wallet.key.HdPublicKey;
 import com.github.orogvany.bip32.wallet.key.ed25519.HdEd25519PrivateKey;
@@ -40,7 +40,7 @@ public class HdEd25519KeyGeneratorTest {
 
     @Test
     public void testKeyGeneration() throws UnsupportedEncodingException, InvalidKeySpecException {
-        HdAddress<HdPrivateKey, HdPublicKey> generalMaster = generalGenerator.getAddressFromSeed("feeed1", Network.mainnet, Curve.bitcoin);
+        HdAddress<HdPrivateKey, HdPublicKey> generalMaster = generalGenerator.getAddressFromSeed("feeed1", Network.mainnet, CoinType.bitcoin);
         byte[] masterSecret = generalMaster.getPrivateKey().getKeyData();
 
         HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> address = hdKeyGenerator.getAddressFromSeed(Hex.encode(masterSecret), Network.mainnet);
@@ -61,7 +61,7 @@ public class HdEd25519KeyGeneratorTest {
     @Test
     public void testChildKeyGeneration() throws UnsupportedEncodingException {
 
-        HdAddress<HdPrivateKey, HdPublicKey> generalMaster = generalGenerator.getAddressFromSeed("feeed1", Network.mainnet, Curve.bitcoin);
+        HdAddress<HdPrivateKey, HdPublicKey> generalMaster = generalGenerator.getAddressFromSeed("feeed1", Network.mainnet, CoinType.bitcoin);
         byte[] masterSecret = generalMaster.getPrivateKey().getKeyData();
 
         HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> address = hdKeyGenerator.getAddressFromSeed(Hex.encode(masterSecret), Network.mainnet);

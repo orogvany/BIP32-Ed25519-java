@@ -32,7 +32,9 @@ public class HdKeyGenerator {
 
     private static EdDSAParameterSpec ED25519SPEC = EdDSANamedCurveTable.getByName("ed25519");
 
-    public HdAddress<HdPrivateKey, HdPublicKey> getAddressFromSeed(String seed, Network network, Curve curve) throws UnsupportedEncodingException {
+    public HdAddress<HdPrivateKey, HdPublicKey> getAddressFromSeed(String seed, Network network, CoinType coinType) throws UnsupportedEncodingException {
+
+        Curve curve = coinType.getCurve();
         HdAddress<HdPrivateKey, HdPublicKey> address = new HdAddress<>();
 
         HdPublicKey publicKey = new HdPublicKey();
@@ -83,7 +85,7 @@ public class HdKeyGenerator {
                 break;
         }
 
-        address.setCurve(curve);
+        address.setCoinType(coinType);
 
         return address;
     }
@@ -93,8 +95,7 @@ public class HdKeyGenerator {
             throw new CryptoException("Cannot derive child public keys from hardened keys");
         }
 
-        if(curve == Curve.ed25519)
-        {
+        if (curve == Curve.ed25519) {
             throw new UnsupportedOperationException("Unable to derive ed25519 public key chaining");
         }
 
@@ -143,10 +144,8 @@ public class HdKeyGenerator {
 
         if (isHardened) {
             child += 0x80000000;
-            if(address.getCurve() == Curve.ed25519)
-            {
-                throw new CryptoException("ed25519 only supports hardened keys");
-            }
+        } else if (parent.getCoinType().getCurve() == Curve.ed25519) {
+            throw new CryptoException("ed25519 only supports hardened keys");
         }
 
         byte[] xChain = parent.getPrivateKey().getChainCode();
@@ -199,7 +198,7 @@ public class HdKeyGenerator {
         publicKey.setChainCode(IR);
         publicKey.setKeyData(Secp256k1.serP(point));
 
-        switch (parent.getCurve()) {
+        switch (parent.getCoinType().getCurve()) {
             case bitcoin:
                 privateKey.setPrivateKey(privateKey.getKeyData());
                 publicKey.setPublicKey(publicKey.getKeyData());
@@ -219,7 +218,7 @@ public class HdKeyGenerator {
                 break;
         }
 
-        address.setCurve(parent.getCurve());
+        address.setCoinType(parent.getCoinType());
 
         return address;
     }

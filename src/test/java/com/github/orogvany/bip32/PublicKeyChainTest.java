@@ -1,5 +1,6 @@
 package com.github.orogvany.bip32;
 
+import com.github.orogvany.bip32.wallet.CoinType;
 import com.github.orogvany.bip32.wallet.HdAddress;
 import com.github.orogvany.bip32.wallet.HdKeyGenerator;
 import com.github.orogvany.bip32.wallet.key.Curve;
@@ -18,7 +19,7 @@ public class PublicKeyChainTest {
     @Test
     public void testPubKey0() throws UnsupportedEncodingException {
 
-        HdAddress rootAddress = generator.getAddressFromSeed(SEED, Network.mainnet, Curve.bitcoin);
+        HdAddress rootAddress = generator.getAddressFromSeed(SEED, Network.mainnet, CoinType.bitcoin);
         HdAddress address = generator.getAddress(rootAddress, 0, false);
         //test that the pub key chain generated from only public key matches the other
         HdPublicKey pubKey = generator.getPublicKey(rootAddress.getPublicKey(), 0, false, Curve.bitcoin);

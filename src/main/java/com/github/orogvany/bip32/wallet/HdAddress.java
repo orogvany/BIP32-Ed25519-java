@@ -1,12 +1,11 @@
 /**
  * Copyright (c) 2018 orogvany
- *
+ * <p>
  * Distributed under the MIT software license, see the accompanying file
  * LICENSE or https://opensource.org/licenses/mit-license.php
  */
 package com.github.orogvany.bip32.wallet;
 
-import com.github.orogvany.bip32.wallet.key.Curve;
 import com.github.orogvany.bip32.wallet.key.HdPrivateKey;
 import com.github.orogvany.bip32.wallet.key.HdPublicKey;
 
@@ -17,7 +16,7 @@ public class HdAddress<S extends HdPrivateKey, P extends HdPublicKey> {
 
     private S privateKey;
     private P publicKey;
-    private Curve curve;
+    private CoinType coinType;
 
     public S getPrivateKey() {
         return privateKey;
@@ -35,11 +34,11 @@ public class HdAddress<S extends HdPrivateKey, P extends HdPublicKey> {
         this.publicKey = publicKey;
     }
 
-    public Curve getCurve() {
-        return curve;
+    public CoinType getCoinType() {
+        return coinType;
     }
 
-    public void setCurve(Curve curve) {
-        this.curve = curve;
+    public void setCoinType(CoinType coinType) {
+        this.coinType = coinType;
     }
 }

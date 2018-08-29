@@ -1,14 +1,14 @@
 /**
  * Copyright (c) 2018 orogvany
- *
+ * <p>
  * Distributed under the MIT software license, see the accompanying file
  * LICENSE or https://opensource.org/licenses/mit-license.php
  */
 package com.github.orogvany.bip32;
 
+import com.github.orogvany.bip32.wallet.CoinType;
 import com.github.orogvany.bip32.wallet.HdAddress;
 import com.github.orogvany.bip32.wallet.HdKeyGenerator;
-import com.github.orogvany.bip32.wallet.key.Curve;
 
 import java.io.UnsupportedEncodingException;
 
@@ -18,7 +18,7 @@ public abstract class BaseVectorTest {
     public HdKeyGenerator hdKeyGenerator = new HdKeyGenerator();
 
     public BaseVectorTest() throws UnsupportedEncodingException {
-        masterNode = hdKeyGenerator.getAddressFromSeed(getSeed(), Network.mainnet, Curve.bitcoin);
+        masterNode = hdKeyGenerator.getAddressFromSeed(getSeed(), Network.mainnet, CoinType.bitcoin);
     }
 
     protected abstract String getSeed();
