@@ -13,8 +13,15 @@ import com.github.orogvany.bip32.crypto.HmacSha512;
 import com.github.orogvany.bip32.crypto.Secp256k1;
 import com.github.orogvany.bip32.exception.CryptoException;
 import com.github.orogvany.bip32.extern.Hex;
+import com.github.orogvany.bip32.wallet.key.Curve;
 import com.github.orogvany.bip32.wallet.key.HdPrivateKey;
 import com.github.orogvany.bip32.wallet.key.HdPublicKey;
+import net.i2p.crypto.eddsa.EdDSAPrivateKey;
+import net.i2p.crypto.eddsa.EdDSAPublicKey;
+import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
+import net.i2p.crypto.eddsa.spec.EdDSAParameterSpec;
+import net.i2p.crypto.eddsa.spec.EdDSAPrivateKeySpec;
+import net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec;
 import org.bouncycastle.math.ec.ECPoint;
 
 import java.io.UnsupportedEncodingException;
@@ -23,7 +30,10 @@ import java.util.Arrays;
 
 public class HdKeyGenerator {
 
-    public HdAddress getAddressFromSeed(String seed, Network network) throws UnsupportedEncodingException {
+    private static EdDSAParameterSpec ED25519SPEC = EdDSANamedCurveTable.getByName("ed25519");
+
+
+    public HdAddress<HdPrivateKey, HdPublicKey> getAddressFromSeed(String seed, Network network, Curve curve) throws UnsupportedEncodingException {
         HdAddress<HdPrivateKey, HdPublicKey> address = new HdAddress<>();
 
         HdPublicKey publicKey = new HdPublicKey();
@@ -32,7 +42,7 @@ public class HdKeyGenerator {
         address.setPublicKey(publicKey);
 
         byte[] seedBytes = Hex.decode(seed);
-        byte[] I = HmacSha512.hmac512(seedBytes, "Bitcoin seed".getBytes("UTF-8"));
+        byte[] I = HmacSha512.hmac512(seedBytes, curve.getSeed().getBytes("UTF-8"));
 
         //split into left/right
         byte[] IL = Arrays.copyOfRange(I, 0, 32);
@@ -41,8 +51,7 @@ public class HdKeyGenerator {
         BigInteger masterSecretKey = HdUtil.parse256(IL);
 
         //In case IL is 0 or ≥n, the master key is invalid.
-        if(masterSecretKey.compareTo(BigInteger.ZERO) == 0 || masterSecretKey.compareTo(Secp256k1.getN()) > 0)
-        {
+        if (curve != Curve.ed25519 && masterSecretKey.compareTo(BigInteger.ZERO) == 0 || masterSecretKey.compareTo(Secp256k1.getN()) > 0) {
             throw new CryptoException("The master key is invalid");
         }
 
@@ -62,6 +71,19 @@ public class HdKeyGenerator {
         publicKey.setChainCode(IR);
         publicKey.setKeyData(Secp256k1.serP(point));
 
+        switch (curve) {
+            case bitcoin:
+                privateKey.setPrivateKey(privateKey.getKeyData());
+                publicKey.setPublicKey(publicKey.getKeyData());
+                break;
+            case ed25519:
+                privateKey.setPrivateKey(IL);
+                EdDSAPrivateKey sk = new EdDSAPrivateKey(new EdDSAPrivateKeySpec(IL, ED25519SPEC));
+                EdDSAPublicKey pk = new EdDSAPublicKey(new EdDSAPublicKeySpec(sk.getA(), sk.getParams()));
+                publicKey.setPublicKey(HdUtil.append(new byte[]{0}, pk.getAbyte()));
+                break;
+        }
+
         return address;
     }
 
@@ -70,7 +92,7 @@ public class HdKeyGenerator {
             throw new CryptoException("Cannot derive child public keys from hardened keys");
         }
 
-        byte[] key = parent.getData();
+        byte[] key = parent.getKeyData();
         byte[] data = HdUtil.append(key, HdUtil.ser32(child));
         //I = HMAC-SHA512(Key = cpar, Data = serP(point(kpar)) || ser32(i))
         byte[] I = HmacSha512.hmac512(data, parent.getChainCode());
@@ -129,7 +151,7 @@ public class HdKeyGenerator {
         } else {
             //I = HMAC-SHA512(Key = cpar, Data = serP(point(kpar)) || ser32(i))
             //just use public key
-            byte[] key = parent.getPublicKey().getData();
+            byte[] key = parent.getPublicKey().getKeyData();
             byte[] xPubKey = HdUtil.append(key, HdUtil.ser32(child));
             I = HmacSha512.hmac512(xPubKey, xChain);
         }
@@ -139,7 +161,7 @@ public class HdKeyGenerator {
         byte[] IR = Arrays.copyOfRange(I, 32, 64);
         //The returned child key ki is parse256(IL) + kpar (mod n).
         BigInteger parse256 = HdUtil.parse256(IL);
-        BigInteger kpar = HdUtil.parse256(parent.getPrivateKey().getData());
+        BigInteger kpar = HdUtil.parse256(parent.getPrivateKey().getKeyData());
         BigInteger childSecretKey = parse256.add(kpar).mod(Secp256k1.getN());
 
         byte[] childNumber = HdUtil.ser32(child);

@@ -8,6 +8,7 @@ package com.github.orogvany.bip32;
 
 import com.github.orogvany.bip32.wallet.HdAddress;
 import com.github.orogvany.bip32.wallet.HdKeyGenerator;
+import com.github.orogvany.bip32.wallet.key.Curve;
 
 import java.io.UnsupportedEncodingException;
 
@@ -17,7 +18,7 @@ public abstract class BaseVectorTest {
     public HdKeyGenerator hdKeyGenerator = new HdKeyGenerator();
 
     public BaseVectorTest() throws UnsupportedEncodingException {
-        masterNode = hdKeyGenerator.getAddressFromSeed(getSeed(), Network.mainnet);
+        masterNode = hdKeyGenerator.getAddressFromSeed(getSeed(), Network.mainnet, Curve.bitcoin);
     }
 
     protected abstract String getSeed();

@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2018 orogvany
- *
+ * <p>
  * Distributed under the MIT software license, see the accompanying file
  * LICENSE or https://opensource.org/licenses/mit-license.php
  */
@@ -9,7 +9,6 @@ package com.github.orogvany.bip32.wallet.key;
 import com.github.orogvany.bip32.crypto.Hash;
 import com.github.orogvany.bip32.crypto.HdUtil;
 import com.github.orogvany.bip32.extern.Base58;
-import com.github.orogvany.bip32.extern.Hex;
 
 import java.util.Arrays;
 
@@ -75,12 +74,7 @@ public class HdKey {
         key = HdUtil.append(key, keyData);
         byte[] checksum = Hash.sha256Twice(key);
         key = HdUtil.append(key, Arrays.copyOfRange(checksum, 0, 4));
-//        System.out.println(Hex.encode(key));
         return Base58.encode(key);
-    }
-
-    public byte[] getData() {
-        return keyData;
     }
 
     public int getDepth() {

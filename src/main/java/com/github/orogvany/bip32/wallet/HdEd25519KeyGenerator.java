@@ -28,7 +28,10 @@ import java.util.Arrays;
 
 /**
  * We'll get this working a separate implementation, then extract a base class.
+ *
+ * Note: This class is currently non compliant, marking as deprecated
  */
+@Deprecated
 public class HdEd25519KeyGenerator {
 
     private static final EdDSANamedCurveSpec spec = EdDSANamedCurveTable.getByName("Ed25519");

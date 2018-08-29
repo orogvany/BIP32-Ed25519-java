@@ -6,7 +6,14 @@
  */
 package com.github.orogvany.bip32.wallet.key;
 
-import com.github.orogvany.bip32.wallet.key.HdKey;
-
 public class HdPrivateKey extends HdKey {
+    private byte[] privateKey;
+
+    public byte[] getPrivateKey() {
+        return privateKey;
+    }
+
+    public void setPrivateKey(byte[] privateKey) {
+        this.privateKey = privateKey;
+    }
 }
