@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2018 orogvany
- *
+ * <p>
  * Distributed under the MIT software license, see the accompanying file
  * LICENSE or https://opensource.org/licenses/mit-license.php
  */
@@ -22,7 +22,7 @@ import static org.junit.Assert.fail;
 
 public class SlipVectorOneTest {
 
-    public static final String SEED = "000102030405060708090a0b0c0d0e0f";
+    public static final byte[] SEED = Hex.decode("000102030405060708090a0b0c0d0e0f");
     public HdKeyGenerator hdKeyGenerator = new HdKeyGenerator();
 
     @Test

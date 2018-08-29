@@ -21,5 +21,5 @@ public abstract class BaseVectorTest {
         masterNode = hdKeyGenerator.getAddressFromSeed(getSeed(), Network.mainnet, CoinType.bitcoin);
     }
 
-    protected abstract String getSeed();
+    protected abstract byte[] getSeed();
 }

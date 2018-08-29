@@ -6,6 +6,7 @@
  */
 package com.github.orogvany.bip32;
 
+import com.github.orogvany.bip32.extern.Hex;
 import com.github.orogvany.bip32.wallet.HdAddress;
 import org.junit.Test;
 
@@ -14,7 +15,7 @@ import java.io.UnsupportedEncodingException;
 import static org.junit.Assert.assertEquals;
 
 public class VectorThreeTest extends BaseVectorTest {
-    public static final String SEED = "4b381541583be4423346c643850da4b320e46a87ae3d2a4e6da11eba819cd4acba45d239319ac14f863b8d5ab5a0d0c64d2e8a1e7d1457df2e5a3c51c73235be";
+    public static final byte[] SEED = Hex.decode("4b381541583be4423346c643850da4b320e46a87ae3d2a4e6da11eba819cd4acba45d239319ac14f863b8d5ab5a0d0c64d2e8a1e7d1457df2e5a3c51c73235be");
 
     public VectorThreeTest() throws UnsupportedEncodingException {
         super();
@@ -40,7 +41,7 @@ public class VectorThreeTest extends BaseVectorTest {
     }
 
     @Override
-    protected String getSeed() {
+    protected byte[] getSeed() {
         return SEED;
     }
 }

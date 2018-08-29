@@ -1,11 +1,12 @@
 /**
  * Copyright (c) 2018 orogvany
- *
+ * <p>
  * Distributed under the MIT software license, see the accompanying file
  * LICENSE or https://opensource.org/licenses/mit-license.php
  */
 package com.github.orogvany.bip32;
 
+import com.github.orogvany.bip32.extern.Hex;
 import com.github.orogvany.bip32.wallet.HdAddress;
 import org.junit.Test;
 
@@ -14,7 +15,7 @@ import java.io.UnsupportedEncodingException;
 import static org.junit.Assert.assertEquals;
 
 public class VectorTwoTest extends BaseVectorTest {
-    public static final String SEED = "fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542";
+    public static final byte[] SEED = Hex.decode("fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542");
 
     public VectorTwoTest() throws UnsupportedEncodingException {
         super();
@@ -52,11 +53,10 @@ public class VectorTwoTest extends BaseVectorTest {
         HdAddress chain = hdKeyGenerator.getAddress(masterNode, 0, false);
         chain = hdKeyGenerator.getAddress(chain, 2147483647, true);
         assertEquals(expected, chain.getPrivateKey().getKey());
-
     }
 
     @Override
-    protected String getSeed() {
+    protected byte[] getSeed() {
         return SEED;
     }
 }

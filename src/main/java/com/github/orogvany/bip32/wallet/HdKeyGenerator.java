@@ -32,7 +32,7 @@ public class HdKeyGenerator {
 
     private static EdDSAParameterSpec ED25519SPEC = EdDSANamedCurveTable.getByName("ed25519");
 
-    public HdAddress<HdPrivateKey, HdPublicKey> getAddressFromSeed(String seed, Network network, CoinType coinType) throws UnsupportedEncodingException {
+    public HdAddress<HdPrivateKey, HdPublicKey> getAddressFromSeed(byte[] seed, Network network, CoinType coinType) throws UnsupportedEncodingException {
 
         Curve curve = coinType.getCurve();
         HdAddress<HdPrivateKey, HdPublicKey> address = new HdAddress<>();
@@ -42,8 +42,7 @@ public class HdKeyGenerator {
         address.setPrivateKey(privateKey);
         address.setPublicKey(publicKey);
 
-        byte[] seedBytes = Hex.decode(seed);
-        byte[] I = HmacSha512.hmac512(seedBytes, curve.getSeed().getBytes("UTF-8"));
+        byte[] I = HmacSha512.hmac512(seed, curve.getSeed().getBytes("UTF-8"));
 
         //split into left/right
         byte[] IL = Arrays.copyOfRange(I, 0, 32);

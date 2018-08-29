@@ -40,7 +40,9 @@ public class HdEd25519KeyGeneratorTest {
 
     @Test
     public void testKeyGeneration() throws UnsupportedEncodingException, InvalidKeySpecException {
-        HdAddress<HdPrivateKey, HdPublicKey> generalMaster = generalGenerator.getAddressFromSeed("feeed1", Network.mainnet, CoinType.bitcoin);
+        byte[] seedBytes = Hex.decode("feeed1");
+
+        HdAddress<HdPrivateKey, HdPublicKey> generalMaster = generalGenerator.getAddressFromSeed(seedBytes, Network.mainnet, CoinType.bitcoin);
         byte[] masterSecret = generalMaster.getPrivateKey().getKeyData();
 
         HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> address = hdKeyGenerator.getAddressFromSeed(Hex.encode(masterSecret), Network.mainnet);
@@ -60,8 +62,8 @@ public class HdEd25519KeyGeneratorTest {
 
     @Test
     public void testChildKeyGeneration() throws UnsupportedEncodingException {
-
-        HdAddress<HdPrivateKey, HdPublicKey> generalMaster = generalGenerator.getAddressFromSeed("feeed1", Network.mainnet, CoinType.bitcoin);
+        byte[] seedBytes = Hex.decode("feeed1");
+        HdAddress<HdPrivateKey, HdPublicKey> generalMaster = generalGenerator.getAddressFromSeed(seedBytes, Network.mainnet, CoinType.bitcoin);
         byte[] masterSecret = generalMaster.getPrivateKey().getKeyData();
 
         HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> address = hdKeyGenerator.getAddressFromSeed(Hex.encode(masterSecret), Network.mainnet);

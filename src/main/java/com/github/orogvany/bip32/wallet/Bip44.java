@@ -34,7 +34,7 @@ public class Bip44 {
      * @return
      * @throws UnsupportedEncodingException
      */
-    public HdAddress<HdPrivateKey, HdPublicKey> getRootAddressFromSeed(String seed, Network network, CoinType coinType) throws UnsupportedEncodingException {
+    public HdAddress<HdPrivateKey, HdPublicKey> getRootAddressFromSeed(byte[] seed, Network network, CoinType coinType) throws UnsupportedEncodingException {
         HdAddress<HdPrivateKey, HdPublicKey> masterAddress = hdKeyGenerator.getAddressFromSeed(seed, network, coinType);
         HdAddress<HdPrivateKey, HdPublicKey> purposeAddress = hdKeyGenerator.getAddress(masterAddress, PURPOSE, true);
         HdAddress<HdPrivateKey, HdPublicKey> coinTypeAddress = hdKeyGenerator.getAddress(purposeAddress, coinType.getCoinType(), true);
