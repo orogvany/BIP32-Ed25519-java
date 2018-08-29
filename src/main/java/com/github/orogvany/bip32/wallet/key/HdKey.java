@@ -88,4 +88,8 @@ public class HdKey {
     public byte[] getVersion() {
         return version;
     }
+
+    public byte[] getFingerprint() {
+        return fingerprint;
+    }
 }

@@ -32,7 +32,6 @@ public class HdKeyGenerator {
 
     private static EdDSAParameterSpec ED25519SPEC = EdDSANamedCurveTable.getByName("ed25519");
 
-
     public HdAddress<HdPrivateKey, HdPublicKey> getAddressFromSeed(String seed, Network network, Curve curve) throws UnsupportedEncodingException {
         HdAddress<HdPrivateKey, HdPublicKey> address = new HdAddress<>();
 
@@ -84,12 +83,19 @@ public class HdKeyGenerator {
                 break;
         }
 
+        address.setCurve(curve);
+
         return address;
     }
 
-    public HdPublicKey getPublicKey(HdPublicKey parent, long child, boolean isHardened) {
+    public HdPublicKey getPublicKey(HdPublicKey parent, long child, boolean isHardened, Curve curve) {
         if (isHardened) {
             throw new CryptoException("Cannot derive child public keys from hardened keys");
+        }
+
+        if(curve == Curve.ed25519)
+        {
+            throw new UnsupportedOperationException("Unable to derive ed25519 public key chaining");
         }
 
         byte[] key = parent.getKeyData();
@@ -128,7 +134,7 @@ public class HdKeyGenerator {
         return publicKey;
     }
 
-    public HdAddress getAddress(HdAddress parent, long child, boolean isHardened) {
+    public HdAddress<HdPrivateKey, HdPublicKey> getAddress(HdAddress parent, long child, boolean isHardened) {
         HdAddress<HdPrivateKey, HdPublicKey> address = new HdAddress<>();
         HdPrivateKey privateKey = new HdPrivateKey();
         HdPublicKey publicKey = new HdPublicKey();
@@ -137,6 +143,10 @@ public class HdKeyGenerator {
 
         if (isHardened) {
             child += 0x80000000;
+            if(address.getCurve() == Curve.ed25519)
+            {
+                throw new CryptoException("ed25519 only supports hardened keys");
+            }
         }
 
         byte[] xChain = parent.getPrivateKey().getChainCode();
@@ -188,6 +198,26 @@ public class HdKeyGenerator {
         publicKey.setChildNumber(childNumber);
         publicKey.setChainCode(IR);
         publicKey.setKeyData(Secp256k1.serP(point));
+
+        switch (parent.getCurve()) {
+            case bitcoin:
+                privateKey.setPrivateKey(privateKey.getKeyData());
+                publicKey.setPublicKey(publicKey.getKeyData());
+                break;
+            case ed25519:
+                privateKey.setPrivateKey(IL);
+                h160 = Hash.h160(parent.getPublicKey().getPublicKey());
+                childFingerprint = new byte[]{h160[0], h160[1], h160[2], h160[3]};
+                publicKey.setFingerprint(childFingerprint);
+                privateKey.setFingerprint(childFingerprint);
+
+                EdDSAPrivateKey sk = new EdDSAPrivateKey(new EdDSAPrivateKeySpec(IL, ED25519SPEC));
+                EdDSAPublicKey pk = new EdDSAPublicKey(new EdDSAPublicKeySpec(sk.getA(), sk.getParams()));
+                publicKey.setPublicKey(HdUtil.append(new byte[]{0}, pk.getAbyte()));
+                break;
+        }
+
+        address.setCurve(parent.getCurve());
 
         return address;
     }

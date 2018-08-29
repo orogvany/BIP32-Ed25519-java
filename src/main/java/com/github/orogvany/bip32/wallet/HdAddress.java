@@ -6,6 +6,7 @@
  */
 package com.github.orogvany.bip32.wallet;
 
+import com.github.orogvany.bip32.wallet.key.Curve;
 import com.github.orogvany.bip32.wallet.key.HdPrivateKey;
 import com.github.orogvany.bip32.wallet.key.HdPublicKey;
 
@@ -16,6 +17,7 @@ public class HdAddress<S extends HdPrivateKey, P extends HdPublicKey> {
 
     private S privateKey;
     private P publicKey;
+    private Curve curve;
 
     public S getPrivateKey() {
         return privateKey;
@@ -31,5 +33,13 @@ public class HdAddress<S extends HdPrivateKey, P extends HdPublicKey> {
 
     public void setPublicKey(P publicKey) {
         this.publicKey = publicKey;
+    }
+
+    public Curve getCurve() {
+        return curve;
+    }
+
+    public void setCurve(Curve curve) {
+        this.curve = curve;
     }
 }
