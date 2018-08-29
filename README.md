@@ -15,12 +15,11 @@ They are designed to be replaced with open source libs as time permits.
 
 Current state:
 * BIP32 implemented, Ed25519 works for master key
-* Using https://cardanolaunch.com/assets/Ed25519_BIP.pdf rather than chain.com proposal due to noted incompatibilities and side chain attack.
+* Not using https://cardanolaunch.com/assets/Ed25519_BIP.pdf, decided on using SLIP-0010 due to ease of implementation and test vectors supplied.
+* BIP-44 utility methods exist
 
 TODO:
-* BIP44 - abstraction for multiple coins heirarchy
 * BIP39 - Support for mnemonic codes (should be libs out there already)
-* ED25519 implementation
 * A much needed code refactor/cleanup
 
 ## Compiling
