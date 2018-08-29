@@ -35,6 +35,7 @@ public class HdEd25519KeyGenerator {
 
 
     public HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> getAddressFromSeed(String seed, Network network) throws UnsupportedEncodingException {
+        //todo - this should be the master secret (parent secret)
         byte[] seedBytes = Hex.decode(seed);
 
         //supposed to use sha512 instead of hmac for whatever reason.
@@ -72,6 +73,7 @@ public class HdEd25519KeyGenerator {
         //A <- [KL]B is the root public key after encoding
         // Interpret KL as little-endian int and perform a fixed-base scalar multiplication
         BigInteger ILBigInt = HdUtil.parse256LE(KL);
+        //todo - going around in circles here
         byte[] ilEncoded = ILBigInt.toByteArray();
         ArrayUtils.reverse(ilEncoded);
 
@@ -113,22 +115,66 @@ public class HdEd25519KeyGenerator {
     }
 
 
-    public HdAddress getAddress(HdAddress parent, long child, boolean isHardened) {
+    public HdAddress getAddress(HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> parent, long child, boolean isHardened) {
 
         if (isHardened) {
             child += 0x80000000;
         }
         //todo - implement chaining
 
+        byte[] data;
+        byte[] childBytes = HdUtil.ser32LE(child);
+        if (isHardened) {
+            byte[] KP = parent.getPrivateKey().getEd25519Key();
+            data = HdUtil.append(Hex.decode0x("0x00"), HdUtil.append(KP, childBytes));
+        } else {
+            byte[] AP = parent.getPublicKey().getEd25519Key();
+            data = HdUtil.append(Hex.decode0x("0x02"), HdUtil.append(AP, childBytes));
+
+        }
+        byte[] Z = HmacSha512.hmac512(data, parent.getPrivateKey().getChainCode());
+
+        byte[] ZL = Arrays.copyOfRange(Z, 0, 28);
+        byte[] ZR = Arrays.copyOfRange(Z, 32, 64);
+
+
+        //kL ← h8[ZL] + [kPL],
+        byte[] KP = parent.getPrivateKey().getEd25519Key();
+
+        byte[] KPL = Arrays.copyOfRange(KP, 0, 32);
+        byte[] KPR = Arrays.copyOfRange(KP, 32, 64);
+        BigInteger KL = new BigInteger("8");
+        KL = KL.multiply(HdUtil.parse256LE(ZL));
+        KL = KL.add(HdUtil.parse256LE(KPL));
+
+        BigInteger KR = HdUtil.parse256LE(KPR);
+        KR = KR.add(HdUtil.parse256LE(ZR));
+        KR = KR.mod(BigInteger.ONE.shiftLeft(256));
+
+        byte[] KLBytes = KL.toByteArray();
+        byte[] KRBytes = KR.toByteArray();
+
+        // TODO If kL is divisible by the base order n, discard the child.
         HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> address = new HdAddress<>();
 
         HdEd25519PrivateKey privateKey = new HdEd25519PrivateKey();
+        privateKey.setEd25519Key(HdUtil.append(KL.toByteArray(), KR.toByteArray()));
         privateKey.setVersion(parent.getPrivateKey().getVersion());
         privateKey.setDepth(0);
         privateKey.setFingerprint(new byte[]{0, 0, 0, 0});
         privateKey.setChildNumber(new byte[]{0, 0, 0, 0});
 
+        //pubKey Ai is AP + [8ZL]B
+        BigInteger ZL8 = HdUtil.parse256LE(ZL);
+        ZL8 = ZL8.multiply(new BigInteger("8"));
+        byte[] ZL8Bytes = ZL8.toByteArray();
+//        ArrayUtils.reverse(ZL8Bytes);
+        GroupElement AI = spec.getB().scalarMultiply(ZL8Bytes);
+
+        AI.add(new GroupElement(spec.getCurve(),parent.getPublicKey().getEd25519Key()));
+
         HdEd25519PublicKey publicKey = new HdEd25519PublicKey();
+        publicKey.setEd25519Key(AI.toByteArray());
         publicKey.setVersion(parent.getPublicKey().getVersion());
         publicKey.setDepth(0);
         publicKey.setFingerprint(new byte[]{0, 0, 0, 0});

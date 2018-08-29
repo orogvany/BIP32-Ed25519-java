@@ -55,6 +55,30 @@ public class HdEd25519KeyGeneratorTest {
         Assert.assertTrue(verified);
     }
 
+    @Test
+    public void testChildKeyGeneration() throws UnsupportedEncodingException {
+
+        HdAddress<HdPrivateKey, HdPublicKey> generalMaster = generalGenerator.getAddressFromSeed("feeed1", Network.mainnet);
+        byte[] masterSecret = generalMaster.getPrivateKey().getKeyData();
+
+        HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> address = hdKeyGenerator.getAddressFromSeed(Hex.encode(masterSecret), Network.mainnet);
+
+        address = hdKeyGenerator.getAddress(address,0, false);
+
+        EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName("ed25519");
+
+        EdDSAPrivateKey sk = new EdDSAPrivateKey(new EdDSAPrivateKeySpec(spec, address.getPrivateKey().getEd25519Key()));
+        EdDSAPublicKey pk = new EdDSAPublicKey(new EdDSAPublicKeySpec(address.getPublicKey().getEd25519Key(), spec));
+
+        String test = "Here's a message";
+
+        byte[] sig = sign(sk, test.getBytes());
+        boolean verified = verify(test.getBytes(), sig, pk);
+
+        Assert.assertTrue(verified);
+
+    }
+
     private static byte[] sign(EdDSAPrivateKey sk, byte[] message) {
         try {
             byte[] sig;

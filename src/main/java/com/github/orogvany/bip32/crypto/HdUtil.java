@@ -1,6 +1,6 @@
 /**
  * Copyright (c) 2018 orogvany
- *
+ * <p>
  * Distributed under the MIT software license, see the accompanying file
  * LICENSE or https://opensource.org/licenses/mit-license.php
  */
@@ -134,6 +134,15 @@ public class HdUtil {
         byte[] point = Secp256k1.serP(Secp256k1.point(HdUtil.parse256(keyData)));
         byte[] h160 = Hash.h160(point);
         return new byte[]{h160[0], h160[1], h160[2], h160[3]};
+    }
+
+    public static byte[] ser32LE(long i) {
+        byte[] ser = new byte[4];
+        ser[3] = (byte) (i >> 24);
+        ser[2] = (byte) (i >> 16);
+        ser[1] = (byte) (i >> 8);
+        ser[0] = (byte) (i);
+        return ser;
     }
 }
 
