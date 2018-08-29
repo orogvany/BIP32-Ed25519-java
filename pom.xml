@@ -19,6 +19,7 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
     <repositories>
         <repository>
             <id>bintray</id>
