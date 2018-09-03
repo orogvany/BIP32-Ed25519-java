@@ -14,8 +14,8 @@ import com.github.orogvany.bip32.crypto.HmacSha512;
 import com.github.orogvany.bip32.crypto.Secp256k1;
 import com.github.orogvany.bip32.exception.CryptoException;
 import com.github.orogvany.bip32.extern.Hex;
-import com.github.orogvany.bip32.wallet.key.ed25519.HdEd25519PrivateKey;
-import com.github.orogvany.bip32.wallet.key.ed25519.HdEd25519PublicKey;
+import com.github.orogvany.bip32.wallet.key.HdPrivateKey;
+import com.github.orogvany.bip32.wallet.key.HdPublicKey;
 import net.i2p.crypto.eddsa.math.GroupElement;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveSpec;
 import net.i2p.crypto.eddsa.spec.EdDSANamedCurveTable;
@@ -47,8 +47,8 @@ public class HdEd25519KeyGenerator {
         //split into left/right
         byte[] KL = Arrays.copyOfRange(K, 0, 32);
         byte[] KR = Arrays.copyOfRange(K, 32, 64);
-        HdEd25519PrivateKey privateKey = new HdEd25519PrivateKey();
-        HdEd25519PublicKey publicKey = new HdEd25519PublicKey();
+        HdPrivateKey privateKey = new HdPrivateKey();
+        HdPublicKey publicKey = new HdPublicKey();
 
         //
         // Ed25519 specific
@@ -88,8 +88,8 @@ public class HdEd25519KeyGenerator {
         byte[] masterChainCode = Hash.sha256(HdUtil.append(new byte[]{0x01}, K));
 
         //IL,IR is the extended root private key.
-        privateKey.setEd25519Key(HdUtil.append(KL, KR));
-        publicKey.setEd25519Key(rootPublicKey.toByteArray());
+        privateKey.setPrivateKey(HdUtil.append(KL, KR));
+        publicKey.setPublicKey(rootPublicKey.toByteArray());
 
         //
         // end Ed25519 specific
@@ -159,8 +159,8 @@ public class HdEd25519KeyGenerator {
         // TODO If kL is divisible by the base order n, discard the child.
         HdAddress address = new HdAddress();
 
-        HdEd25519PrivateKey privateKey = new HdEd25519PrivateKey();
-        privateKey.setEd25519Key(HdUtil.append(KL.toByteArray(), KR.toByteArray()));
+        HdPrivateKey privateKey = new HdPrivateKey();
+        privateKey.setPrivateKey(HdUtil.append(KL.toByteArray(), KR.toByteArray()));
         privateKey.setVersion(parent.getPrivateKey().getVersion());
         privateKey.setDepth(0);
         privateKey.setFingerprint(new byte[]{0, 0, 0, 0});
@@ -175,8 +175,8 @@ public class HdEd25519KeyGenerator {
 
         AI.add(new GroupElement(spec.getCurve(),parent.getPublicKey().getPublicKey()));
 
-        HdEd25519PublicKey publicKey = new HdEd25519PublicKey();
-        publicKey.setEd25519Key(AI.toByteArray());
+        HdPublicKey publicKey = new HdPublicKey();
+        publicKey.setPublicKey(AI.toByteArray());
         publicKey.setVersion(parent.getPublicKey().getVersion());
         publicKey.setDepth(0);
         publicKey.setFingerprint(new byte[]{0, 0, 0, 0});
