@@ -66,6 +66,10 @@ public class HdKey {
         return chainCode;
     }
 
+    /**
+     * Get the full chain key.  This is not the public/private key for the address.
+     * @return full HD Key
+     */
     public byte[] getKey() {
 
         ByteArrayOutputStream key = new ByteArrayOutputStream();
