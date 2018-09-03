@@ -1,4 +1,8 @@
 # BIP32-Ed25519-java
+
+[![Build Status](https://travis-ci.org/orogvany/BIP32-Ed25519-java.svg?branch=master)](https://travis-ci.org/orogvany/BIP32-Ed25519-java)
+
+
 BIP32-Ed25519 HD wallets for java
 
 Hierarchical Deterministic wallets are a boon to bitcoin, as it solves a problem of backups and allows for much needed functionality.
