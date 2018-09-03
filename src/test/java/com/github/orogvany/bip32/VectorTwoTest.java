@@ -24,27 +24,27 @@ public class VectorTwoTest extends BaseVectorTest {
     @Test
     public void testMasterNodePrivateKey() {
         String expected = "xprv9s21ZrQH143K31xYSDQpPDxsXRTUcvj2iNHm5NUtrGiGG5e2DtALGdso3pGz6ssrdK4PFmM8NSpSBHNqPqm55Qn3LqFtT2emdEXVYsCzC2U";
-        assertEquals(expected, masterNode.getPrivateKey().getKey());
+        assertEquals(expected, Base58.encode(masterNode.getPrivateKey().getKey()));
     }
 
     @Test
     public void testMasterNodePublicKey() {
         String expected = "xpub661MyMwAqRbcFW31YEwpkMuc5THy2PSt5bDMsktWQcFF8syAmRUapSCGu8ED9W6oDMSgv6Zz8idoc4a6mr8BDzTJY47LJhkJ8UB7WEGuduB";
-        assertEquals(expected, masterNode.getPublicKey().getKey());
+        assertEquals(expected, Base58.encode(masterNode.getPublicKey().getKey()));
     }
 
     @Test
     public void testChain0PrivateKey() {
         String expected = "xprv9vHkqa6EV4sPZHYqZznhT2NPtPCjKuDKGY38FBWLvgaDx45zo9WQRUT3dKYnjwih2yJD9mkrocEZXo1ex8G81dwSM1fwqWpWkeS3v86pgKt";
         HdAddress chain = hdKeyGenerator.getAddress(masterNode, 0, false);
-        assertEquals(expected, chain.getPrivateKey().getKey());
+        assertEquals(expected, Base58.encode(chain.getPrivateKey().getKey()));
     }
 
     @Test
     public void testChain0PublicKey() {
         String expected = "xpub69H7F5d8KSRgmmdJg2KhpAK8SR3DjMwAdkxj3ZuxV27CprR9LgpeyGmXUbC6wb7ERfvrnKZjXoUmmDznezpbZb7ap6r1D3tgFxHmwMkQTPH";
         HdAddress chain = hdKeyGenerator.getAddress(masterNode, 0, false);
-        assertEquals(expected, chain.getPublicKey().getKey());
+        assertEquals(expected, Base58.encode(chain.getPublicKey().getKey()));
     }
 
     @Test
@@ -52,7 +52,7 @@ public class VectorTwoTest extends BaseVectorTest {
         String expected = "xprv9wSp6B7kry3Vj9m1zSnLvN3xH8RdsPP1Mh7fAaR7aRLcQMKTR2vidYEeEg2mUCTAwCd6vnxVrcjfy2kRgVsFawNzmjuHc2YmYRmagcEPdU9";
         HdAddress chain = hdKeyGenerator.getAddress(masterNode, 0, false);
         chain = hdKeyGenerator.getAddress(chain, 2147483647, true);
-        assertEquals(expected, chain.getPrivateKey().getKey());
+        assertEquals(expected, Base58.encode(chain.getPrivateKey().getKey()));
     }
 
     @Override

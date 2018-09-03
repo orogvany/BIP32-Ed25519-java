@@ -24,20 +24,20 @@ public class VectorThreeTest extends BaseVectorTest {
     @Test
     public void testMasterNodePrivateKey() {
         String expected = "xprv9s21ZrQH143K25QhxbucbDDuQ4naNntJRi4KUfWT7xo4EKsHt2QJDu7KXp1A3u7Bi1j8ph3EGsZ9Xvz9dGuVrtHHs7pXeTzjuxBrCmmhgC6";
-        assertEquals(expected, masterNode.getPrivateKey().getKey());
+        assertEquals(expected, Base58.encode(masterNode.getPrivateKey().getKey()));
     }
 
     @Test
     public void testMasterNodePublicKey() {
         String expected = "xpub661MyMwAqRbcEZVB4dScxMAdx6d4nFc9nvyvH3v4gJL378CSRZiYmhRoP7mBy6gSPSCYk6SzXPTf3ND1cZAceL7SfJ1Z3GC8vBgp2epUt13";
-        assertEquals(expected, masterNode.getPublicKey().getKey());
+        assertEquals(expected, Base58.encode(masterNode.getPublicKey().getKey()));
     }
 
     @Test
     public void testChain0HPrivateKey() {
         String expected = "xprv9uPDJpEQgRQfDcW7BkF7eTya6RPxXeJCqCJGHuCJ4GiRVLzkTXBAJMu2qaMWPrS7AANYqdq6vcBcBUdJCVVFceUvJFjaPdGZ2y9WACViL4L";
         HdAddress chain = hdKeyGenerator.getAddress(masterNode, 0, true);
-        assertEquals(expected, chain.getPrivateKey().getKey());
+        assertEquals(expected, Base58.encode(chain.getPrivateKey().getKey()));
     }
 
     @Override

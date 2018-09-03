@@ -8,7 +8,6 @@ package com.github.orogvany.bip32.wallet.key;
 
 import com.github.orogvany.bip32.crypto.Hash;
 import com.github.orogvany.bip32.exception.CryptoException;
-import com.github.orogvany.bip32.extern.Base58;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -67,7 +66,7 @@ public class HdKey {
         return chainCode;
     }
 
-    public String getKey() {
+    public byte[] getKey() {
 
         ByteArrayOutputStream key = new ByteArrayOutputStream();
 
@@ -84,7 +83,7 @@ public class HdKey {
             throw new CryptoException("Unable to write key");
         }
 
-        return Base58.encode(key.toByteArray());
+        return key.toByteArray();
     }
 
     public int getDepth() {

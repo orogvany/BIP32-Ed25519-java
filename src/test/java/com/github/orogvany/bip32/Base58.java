@@ -1,4 +1,4 @@
-package com.github.orogvany.bip32.extern;
+package com.github.orogvany.bip32;
 /*
  * Copyright 2011 Google Inc.
  * Copyright 2018 Andreas Schildbach
