@@ -14,31 +14,26 @@ import com.github.orogvany.bip32.wallet.key.HdPublicKey;
  */
 public class HdAddress {
 
-    private HdPrivateKey privateKey;
-    private HdPublicKey publicKey;
-    private CoinType coinType;
+    private final HdPrivateKey privateKey;
+    private final HdPublicKey publicKey;
+    private final CoinType coinType;
+
+    public HdAddress(HdPrivateKey privateKey, HdPublicKey publicKey, CoinType coinType) {
+        this.privateKey = privateKey;
+        this.publicKey = publicKey;
+        this.coinType = coinType;
+    }
 
     public HdPrivateKey getPrivateKey() {
         return privateKey;
-    }
-
-    public void setPrivateKey(HdPrivateKey privateKey) {
-        this.privateKey = privateKey;
     }
 
     public HdPublicKey getPublicKey() {
         return publicKey;
     }
 
-    public void setPublicKey(HdPublicKey publicKey) {
-        this.publicKey = publicKey;
-    }
-
     public CoinType getCoinType() {
         return coinType;
     }
 
-    public void setCoinType(CoinType coinType) {
-        this.coinType = coinType;
-    }
 }

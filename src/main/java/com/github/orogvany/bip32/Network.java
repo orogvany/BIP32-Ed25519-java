@@ -12,7 +12,8 @@ import com.github.orogvany.bip32.extern.Hex;
  * Defined network values for key generation
  */
 public enum Network {
-    mainnet("0x0488ADE4", "0x0488B21E");
+    mainnet("0x0488ADE4", "0x0488B21E"),
+    testnet("0x04358394", "0x043587CF");
 
     private final byte[] privatePrefix;
     private final byte[] publicPrefix;

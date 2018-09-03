@@ -101,8 +101,6 @@ public class HdEd25519KeyGenerator {
         privateKey.setChainCode(masterChainCode);
         privateKey.setKeyData(HdUtil.append(new byte[]{0}, HdUtil.ser256(masterSecretKey)));
 
-        HdAddress address = new HdAddress();
-        address.setPrivateKey(privateKey);
         ECPoint point = Secp256k1.point(masterSecretKey);
 
         publicKey.setVersion(network.getPublicKeyVersion());
@@ -111,9 +109,8 @@ public class HdEd25519KeyGenerator {
         publicKey.setChildNumber(new byte[]{0, 0, 0, 0});
         publicKey.setChainCode(masterChainCode);
         publicKey.setKeyData(Secp256k1.serP(point));
-        address.setPublicKey(publicKey);
 
-        return address;
+        return new HdAddress(privateKey, publicKey, CoinType.semux);
     }
 
 
@@ -157,7 +154,6 @@ public class HdEd25519KeyGenerator {
         byte[] KRBytes = KR.toByteArray();
 
         // TODO If kL is divisible by the base order n, discard the child.
-        HdAddress address = new HdAddress();
 
         HdPrivateKey privateKey = new HdPrivateKey();
         privateKey.setPrivateKey(HdUtil.append(KL.toByteArray(), KR.toByteArray()));
@@ -182,8 +178,6 @@ public class HdEd25519KeyGenerator {
         publicKey.setFingerprint(new byte[]{0, 0, 0, 0});
         publicKey.setChildNumber(new byte[]{0, 0, 0, 0});
 
-        address.setPublicKey(publicKey);
-        address.setPrivateKey(privateKey);
-        return address;
+        return new HdAddress(privateKey, publicKey, CoinType.semux);
     }
 }

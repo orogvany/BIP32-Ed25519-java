@@ -1,15 +1,17 @@
 /**
  * Copyright (c) 2018 orogvany
- *
+ * <p>
  * Distributed under the MIT software license, see the accompanying file
  * LICENSE or https://opensource.org/licenses/mit-license.php
  */
 package com.github.orogvany.bip32.wallet.key;
 
 import com.github.orogvany.bip32.crypto.Hash;
-import com.github.orogvany.bip32.crypto.HdUtil;
+import com.github.orogvany.bip32.exception.CryptoException;
 import com.github.orogvany.bip32.extern.Base58;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
 
 /**
@@ -25,7 +27,7 @@ public class HdKey {
     private byte[] chainCode;
     private byte[] keyData;
 
-    public HdKey(byte[] version, int depth, byte[] fingerprint, byte[] childNumber, byte[] chainCode, byte[] keyData) {
+    HdKey(byte[] version, int depth, byte[] fingerprint, byte[] childNumber, byte[] chainCode, byte[] keyData) {
         this.version = version;
         this.depth = depth;
         this.fingerprint = fingerprint;
@@ -34,7 +36,7 @@ public class HdKey {
         this.keyData = keyData;
     }
 
-    public HdKey() {
+    HdKey() {
     }
 
     public void setVersion(byte[] version) {
@@ -66,15 +68,23 @@ public class HdKey {
     }
 
     public String getKey() {
-        //todo - use builder/buffer
-        byte[] key = HdUtil.append(version, new byte[]{(byte) depth});
-        key = HdUtil.append(key, fingerprint);
-        key = HdUtil.append(key, childNumber);
-        key = HdUtil.append(key, chainCode);
-        key = HdUtil.append(key, keyData);
-        byte[] checksum = Hash.sha256Twice(key);
-        key = HdUtil.append(key, Arrays.copyOfRange(checksum, 0, 4));
-        return Base58.encode(key);
+
+        ByteArrayOutputStream key = new ByteArrayOutputStream();
+
+        try {
+            key.write(version);
+            key.write(new byte[]{(byte) depth});
+            key.write(fingerprint);
+            key.write(childNumber);
+            key.write(chainCode);
+            key.write(keyData);
+            byte[] checksum = Hash.sha256Twice(key.toByteArray());
+            key.write(Arrays.copyOfRange(checksum, 0, 4));
+        } catch (IOException e) {
+            throw new CryptoException("Unable to write key");
+        }
+
+        return Base58.encode(key.toByteArray());
     }
 
     public int getDepth() {

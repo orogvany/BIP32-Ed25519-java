@@ -14,7 +14,7 @@ licenses (apache/MIT)
 They are designed to be replaced with open source libs as time permits.
 
 Current state:
-* BIP32 implemented, Ed25519 works for master key
+* BIP32 implemented, Ed25519 works for SLIP-0100
 * Not using https://cardanolaunch.com/assets/Ed25519_BIP.pdf, decided on using SLIP-0010 due to ease of implementation and test vectors supplied.
 * BIP-44 utility methods exist
 

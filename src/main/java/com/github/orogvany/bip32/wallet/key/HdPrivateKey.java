@@ -6,6 +6,9 @@
  */
 package com.github.orogvany.bip32.wallet.key;
 
+/**
+ * Defines a key with a given private key
+ */
 public class HdPrivateKey extends HdKey {
     private byte[] privateKey;
 

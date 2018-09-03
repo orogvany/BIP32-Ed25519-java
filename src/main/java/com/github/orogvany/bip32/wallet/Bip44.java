@@ -16,11 +16,11 @@ import java.io.UnsupportedEncodingException;
 public class Bip44 {
     private HdKeyGenerator hdKeyGenerator = new HdKeyGenerator();
     // purpose is hardcoded to 44'
-    public static final int PURPOSE = 44;
+    private static final int PURPOSE = 44;
     // we support just one user account
     private static final long ACCOUNT = 0;
     // we support just external addresses, 0 is 'external'
-    public static final int CHANGE = 0;
+    private static final int CHANGE = 0;
 
     /**
      * Get a root account address for a given seed
@@ -29,9 +29,8 @@ public class Bip44 {
      * @param network  network
      * @param coinType coinType
      * @return
-     * @throws UnsupportedEncodingException
      */
-    public HdAddress getRootAddressFromSeed(byte[] seed, Network network, CoinType coinType) throws UnsupportedEncodingException {
+    public HdAddress getRootAddressFromSeed(byte[] seed, Network network, CoinType coinType) {
         HdAddress masterAddress = hdKeyGenerator.getAddressFromSeed(seed, network, coinType);
         HdAddress purposeAddress = hdKeyGenerator.getAddress(masterAddress, PURPOSE, true);
         HdAddress coinTypeAddress = hdKeyGenerator.getAddress(purposeAddress, coinType.getCoinType(), true);

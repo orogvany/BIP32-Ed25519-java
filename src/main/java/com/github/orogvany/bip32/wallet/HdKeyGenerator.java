@@ -34,12 +34,9 @@ public class HdKeyGenerator {
     public HdAddress getAddressFromSeed(byte[] seed, Network network, CoinType coinType) {
 
         Curve curve = coinType.getCurve();
-        HdAddress address = new HdAddress();
-
         HdPublicKey publicKey = new HdPublicKey();
         HdPrivateKey privateKey = new HdPrivateKey();
-        address.setPrivateKey(privateKey);
-        address.setPublicKey(publicKey);
+        HdAddress address = new HdAddress(privateKey, publicKey, coinType);
 
         byte[] I;
         try {
@@ -87,8 +84,6 @@ public class HdKeyGenerator {
                 publicKey.setPublicKey(HdUtil.append(new byte[]{0}, pk.getAbyte()));
                 break;
         }
-
-        address.setCoinType(coinType);
 
         return address;
     }
@@ -139,11 +134,9 @@ public class HdKeyGenerator {
     }
 
     public HdAddress getAddress(HdAddress parent, long child, boolean isHardened) {
-        HdAddress address = new HdAddress();
         HdPrivateKey privateKey = new HdPrivateKey();
         HdPublicKey publicKey = new HdPublicKey();
-        address.setPrivateKey(privateKey);
-        address.setPublicKey(publicKey);
+        HdAddress address = new HdAddress(privateKey, publicKey, parent.getCoinType());
 
         if (isHardened) {
             child += 0x80000000;
@@ -207,7 +200,6 @@ public class HdKeyGenerator {
                 publicKey.setPublicKey(publicKey.getKeyData());
                 break;
             case ed25519:
-                //todo - can move this into above
                 privateKey.setPrivateKey(IL);
                 h160 = Hash.h160(parent.getPublicKey().getPublicKey());
                 childFingerprint = new byte[]{h160[0], h160[1], h160[2], h160[3]};
@@ -220,8 +212,6 @@ public class HdKeyGenerator {
                 publicKey.setPublicKey(HdUtil.append(new byte[]{0}, pk.getAbyte()));
                 break;
         }
-
-        address.setCoinType(parent.getCoinType());
 
         return address;
     }
