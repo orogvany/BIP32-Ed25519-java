@@ -1,12 +1,10 @@
 # BIP32-Ed25519-java
 BIP32-Ed25519 HD wallets for java
 
-Work in progress currently.
-
 Hierarchical Deterministic wallets are a boon to bitcoin, as it solves a problem of backups and allows for much needed functionality.
 However, it is fairly specific to secp256k1.  
 
-This project aims to first implement the BIP32 with secp256k1, then extend it with compatibility for Ed25519
+This project aims to implement BIP-32 extending it with compatibility for Ed25519
 
 Please note that code in com.github.orogvany.bip32.extern are temporary constructs, and are licensed under their respective
 licenses (apache/MIT)
@@ -14,13 +12,12 @@ licenses (apache/MIT)
 They are designed to be replaced with open source libs as time permits.
 
 Current state:
-* BIP32 implemented, Ed25519 works for SLIP-0100
+* BIP-32 implemented, Ed25519 works for SLIP-0100
 * Not using https://cardanolaunch.com/assets/Ed25519_BIP.pdf, decided on using SLIP-0010 due to ease of implementation and test vectors supplied.
 * BIP-44 utility methods exist
 
 TODO:
-* BIP39 - Support for mnemonic codes (should be libs out there already)
-* A much needed code refactor/cleanup
+* BIP-39 - Support for mnemonic codes (should be libs out there already)
 
 ## Compiling
 ```
