@@ -12,7 +12,6 @@ import com.github.orogvany.bip32.crypto.HdUtil;
 import com.github.orogvany.bip32.crypto.HmacSha512;
 import com.github.orogvany.bip32.crypto.Secp256k1;
 import com.github.orogvany.bip32.exception.CryptoException;
-import com.github.orogvany.bip32.extern.Hex;
 import com.github.orogvany.bip32.wallet.key.Curve;
 import com.github.orogvany.bip32.wallet.key.HdPrivateKey;
 import com.github.orogvany.bip32.wallet.key.HdPublicKey;
@@ -30,19 +29,24 @@ import java.util.Arrays;
 
 public class HdKeyGenerator {
 
-    private static EdDSAParameterSpec ED25519SPEC = EdDSANamedCurveTable.getByName("ed25519");
+    private static final EdDSAParameterSpec ED25519SPEC = EdDSANamedCurveTable.getByName("ed25519");
 
-    public HdAddress<HdPrivateKey, HdPublicKey> getAddressFromSeed(byte[] seed, Network network, CoinType coinType) throws UnsupportedEncodingException {
+    public HdAddress getAddressFromSeed(byte[] seed, Network network, CoinType coinType) {
 
         Curve curve = coinType.getCurve();
-        HdAddress<HdPrivateKey, HdPublicKey> address = new HdAddress<>();
+        HdAddress address = new HdAddress();
 
         HdPublicKey publicKey = new HdPublicKey();
         HdPrivateKey privateKey = new HdPrivateKey();
         address.setPrivateKey(privateKey);
         address.setPublicKey(publicKey);
 
-        byte[] I = HmacSha512.hmac512(seed, curve.getSeed().getBytes("UTF-8"));
+        byte[] I;
+        try {
+            I = HmacSha512.hmac512(seed, curve.getSeed().getBytes("UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new CryptoException("Unable to decode seed.");
+        }
 
         //split into left/right
         byte[] IL = Arrays.copyOfRange(I, 0, 32);
@@ -134,8 +138,8 @@ public class HdKeyGenerator {
         return publicKey;
     }
 
-    public HdAddress<HdPrivateKey, HdPublicKey> getAddress(HdAddress parent, long child, boolean isHardened) {
-        HdAddress<HdPrivateKey, HdPublicKey> address = new HdAddress<>();
+    public HdAddress getAddress(HdAddress parent, long child, boolean isHardened) {
+        HdAddress address = new HdAddress();
         HdPrivateKey privateKey = new HdPrivateKey();
         HdPublicKey publicKey = new HdPublicKey();
         address.setPrivateKey(privateKey);

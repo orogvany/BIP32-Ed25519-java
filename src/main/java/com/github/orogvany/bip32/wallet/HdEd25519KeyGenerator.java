@@ -36,8 +36,7 @@ public class HdEd25519KeyGenerator {
 
     private static final EdDSANamedCurveSpec spec = EdDSANamedCurveTable.getByName("Ed25519");
 
-
-    public HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> getAddressFromSeed(String seed, Network network) throws UnsupportedEncodingException {
+    public HdAddress getAddressFromSeed(String seed, Network network) throws UnsupportedEncodingException {
         //todo - this should be the master secret (parent secret)
         byte[] seedBytes = Hex.decode(seed);
 
@@ -102,7 +101,7 @@ public class HdEd25519KeyGenerator {
         privateKey.setChainCode(masterChainCode);
         privateKey.setKeyData(HdUtil.append(new byte[]{0}, HdUtil.ser256(masterSecretKey)));
 
-        HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> address = new HdAddress<>();
+        HdAddress address = new HdAddress();
         address.setPrivateKey(privateKey);
         ECPoint point = Secp256k1.point(masterSecretKey);
 
@@ -118,7 +117,7 @@ public class HdEd25519KeyGenerator {
     }
 
 
-    public HdAddress getAddress(HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> parent, long child, boolean isHardened) {
+    public HdAddress getAddress(HdAddress parent, long child, boolean isHardened) {
 
         if (isHardened) {
             child += 0x80000000;
@@ -128,10 +127,10 @@ public class HdEd25519KeyGenerator {
         byte[] data;
         byte[] childBytes = HdUtil.ser32LE(child);
         if (isHardened) {
-            byte[] KP = parent.getPrivateKey().getEd25519Key();
+            byte[] KP = parent.getPrivateKey().getPrivateKey();
             data = HdUtil.append(Hex.decode0x("0x00"), HdUtil.append(KP, childBytes));
         } else {
-            byte[] AP = parent.getPublicKey().getEd25519Key();
+            byte[] AP = parent.getPublicKey().getPublicKey();
             data = HdUtil.append(Hex.decode0x("0x02"), HdUtil.append(AP, childBytes));
 
         }
@@ -142,7 +141,7 @@ public class HdEd25519KeyGenerator {
 
 
         //kL ← h8[ZL] + [kPL],
-        byte[] KP = parent.getPrivateKey().getEd25519Key();
+        byte[] KP = parent.getPrivateKey().getPrivateKey();
 
         byte[] KPL = Arrays.copyOfRange(KP, 0, 32);
         byte[] KPR = Arrays.copyOfRange(KP, 32, 64);
@@ -158,7 +157,7 @@ public class HdEd25519KeyGenerator {
         byte[] KRBytes = KR.toByteArray();
 
         // TODO If kL is divisible by the base order n, discard the child.
-        HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> address = new HdAddress<>();
+        HdAddress address = new HdAddress();
 
         HdEd25519PrivateKey privateKey = new HdEd25519PrivateKey();
         privateKey.setEd25519Key(HdUtil.append(KL.toByteArray(), KR.toByteArray()));
@@ -174,7 +173,7 @@ public class HdEd25519KeyGenerator {
 //        ArrayUtils.reverse(ZL8Bytes);
         GroupElement AI = spec.getB().scalarMultiply(ZL8Bytes);
 
-        AI.add(new GroupElement(spec.getCurve(),parent.getPublicKey().getEd25519Key()));
+        AI.add(new GroupElement(spec.getCurve(),parent.getPublicKey().getPublicKey()));
 
         HdEd25519PublicKey publicKey = new HdEd25519PublicKey();
         publicKey.setEd25519Key(AI.toByteArray());

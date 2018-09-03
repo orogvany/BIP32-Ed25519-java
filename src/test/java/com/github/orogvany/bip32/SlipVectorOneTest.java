@@ -11,8 +11,6 @@ import com.github.orogvany.bip32.wallet.CoinType;
 import com.github.orogvany.bip32.wallet.HdAddress;
 import com.github.orogvany.bip32.wallet.HdKeyGenerator;
 import com.github.orogvany.bip32.wallet.key.Curve;
-import com.github.orogvany.bip32.wallet.key.HdPrivateKey;
-import com.github.orogvany.bip32.wallet.key.HdPublicKey;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -32,7 +30,7 @@ public class SlipVectorOneTest {
         byte[] privateKey = Hex.decode("2b4be7f19ee27bbf30c667b642d5f4aa69fd169872f8fc3059c08ebae2eb19e7");
         byte[] publicKey = Hex.decode("00a4b2856bfec510abab89753fac1ac0e1112364e7d250545963f135f2a33188ed");
 
-        HdAddress<HdPrivateKey, HdPublicKey> address = hdKeyGenerator.getAddressFromSeed(SEED, Network.mainnet, CoinType.semux);
+        HdAddress address = hdKeyGenerator.getAddressFromSeed(SEED, Network.mainnet, CoinType.semux);
 
         Assert.assertArrayEquals(fingerprint, address.getPrivateKey().getFingerprint());
         Assert.assertArrayEquals(chainCode, address.getPrivateKey().getChainCode());
@@ -43,7 +41,7 @@ public class SlipVectorOneTest {
 
     @Test
     public void testUnableToPublicChain() throws UnsupportedEncodingException {
-        HdAddress<HdPrivateKey, HdPublicKey> address = hdKeyGenerator.getAddressFromSeed(SEED, Network.mainnet, CoinType.semux);
+        HdAddress address = hdKeyGenerator.getAddressFromSeed(SEED, Network.mainnet, CoinType.semux);
         try {
             hdKeyGenerator.getPublicKey(address.getPublicKey(), 0, false, Curve.ed25519);
             fail("Should not be able to chain public keys with ed25519");
@@ -60,8 +58,8 @@ public class SlipVectorOneTest {
         byte[] privateKey = Hex.decode("68e0fe46dfb67e368c75379acec591dad19df3cde26e63b93a8e704f1dade7a3");
         byte[] publicKey = Hex.decode("008c8a13df77a28f3445213a0f432fde644acaa215fc72dcdf300d5efaa85d350c");
 
-        HdAddress<HdPrivateKey, HdPublicKey> master = hdKeyGenerator.getAddressFromSeed(SEED, Network.mainnet, CoinType.semux);
-        HdAddress<HdPrivateKey, HdPublicKey> address = hdKeyGenerator.getAddress(master, 0, true);
+        HdAddress master = hdKeyGenerator.getAddressFromSeed(SEED, Network.mainnet, CoinType.semux);
+        HdAddress address = hdKeyGenerator.getAddress(master, 0, true);
 
         Assert.assertArrayEquals(fingerprint, address.getPrivateKey().getFingerprint());
         Assert.assertArrayEquals(chainCode, address.getPrivateKey().getChainCode());
@@ -77,8 +75,8 @@ public class SlipVectorOneTest {
         byte[] privateKey = Hex.decode("b1d0bad404bf35da785a64ca1ac54b2617211d2777696fbffaf208f746ae84f2");
         byte[] publicKey = Hex.decode("001932a5270f335bed617d5b935c80aedb1a35bd9fc1e31acafd5372c30f5c1187");
 
-        HdAddress<HdPrivateKey, HdPublicKey> master = hdKeyGenerator.getAddressFromSeed(SEED, Network.mainnet, CoinType.semux);
-        HdAddress<HdPrivateKey, HdPublicKey> address = hdKeyGenerator.getAddress(master, 0, true);
+        HdAddress master = hdKeyGenerator.getAddressFromSeed(SEED, Network.mainnet, CoinType.semux);
+        HdAddress address = hdKeyGenerator.getAddress(master, 0, true);
         address = hdKeyGenerator.getAddress(address, 1, true);
 
         Assert.assertArrayEquals(fingerprint, address.getPrivateKey().getFingerprint());
@@ -95,8 +93,8 @@ public class SlipVectorOneTest {
         byte[] privateKey = Hex.decode("92a5b23c0b8a99e37d07df3fb9966917f5d06e02ddbd909c7e184371463e9fc9");
         byte[] publicKey = Hex.decode("00ae98736566d30ed0e9d2f4486a64bc95740d89c7db33f52121f8ea8f76ff0fc1");
 
-        HdAddress<HdPrivateKey, HdPublicKey> master = hdKeyGenerator.getAddressFromSeed(SEED, Network.mainnet, CoinType.semux);
-        HdAddress<HdPrivateKey, HdPublicKey> address = hdKeyGenerator.getAddress(master, 0, true);
+        HdAddress master = hdKeyGenerator.getAddressFromSeed(SEED, Network.mainnet, CoinType.semux);
+        HdAddress address = hdKeyGenerator.getAddress(master, 0, true);
         address = hdKeyGenerator.getAddress(address, 1, true);
         address = hdKeyGenerator.getAddress(address, 2, true);
 

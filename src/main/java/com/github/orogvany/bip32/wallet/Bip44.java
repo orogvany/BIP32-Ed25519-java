@@ -7,8 +7,6 @@
 package com.github.orogvany.bip32.wallet;
 
 import com.github.orogvany.bip32.Network;
-import com.github.orogvany.bip32.wallet.key.HdPrivateKey;
-import com.github.orogvany.bip32.wallet.key.HdPublicKey;
 
 import java.io.UnsupportedEncodingException;
 
@@ -24,7 +22,6 @@ public class Bip44 {
     // we support just external addresses, 0 is 'external'
     public static final int CHANGE = 0;
 
-
     /**
      * Get a root account address for a given seed
      *
@@ -34,17 +31,17 @@ public class Bip44 {
      * @return
      * @throws UnsupportedEncodingException
      */
-    public HdAddress<HdPrivateKey, HdPublicKey> getRootAddressFromSeed(byte[] seed, Network network, CoinType coinType) throws UnsupportedEncodingException {
-        HdAddress<HdPrivateKey, HdPublicKey> masterAddress = hdKeyGenerator.getAddressFromSeed(seed, network, coinType);
-        HdAddress<HdPrivateKey, HdPublicKey> purposeAddress = hdKeyGenerator.getAddress(masterAddress, PURPOSE, true);
-        HdAddress<HdPrivateKey, HdPublicKey> coinTypeAddress = hdKeyGenerator.getAddress(purposeAddress, coinType.getCoinType(), true);
-        HdAddress<HdPrivateKey, HdPublicKey> accountAddress = hdKeyGenerator.getAddress(coinTypeAddress, ACCOUNT, true);
-        HdAddress<HdPrivateKey, HdPublicKey> changeAddress = hdKeyGenerator.getAddress(accountAddress, CHANGE, coinType.getAlwaysHardened());
+    public HdAddress getRootAddressFromSeed(byte[] seed, Network network, CoinType coinType) throws UnsupportedEncodingException {
+        HdAddress masterAddress = hdKeyGenerator.getAddressFromSeed(seed, network, coinType);
+        HdAddress purposeAddress = hdKeyGenerator.getAddress(masterAddress, PURPOSE, true);
+        HdAddress coinTypeAddress = hdKeyGenerator.getAddress(purposeAddress, coinType.getCoinType(), true);
+        HdAddress accountAddress = hdKeyGenerator.getAddress(coinTypeAddress, ACCOUNT, true);
+        HdAddress changeAddress = hdKeyGenerator.getAddress(accountAddress, CHANGE, coinType.getAlwaysHardened());
 
         return changeAddress;
     }
 
-    public HdAddress<HdPrivateKey, HdPublicKey> getAddress(HdAddress address, int index) {
+    public HdAddress getAddress(HdAddress address, int index) {
         return hdKeyGenerator.getAddress(address, index, address.getCoinType().getAlwaysHardened());
     }
 }

@@ -12,10 +12,6 @@ import com.github.orogvany.bip32.wallet.CoinType;
 import com.github.orogvany.bip32.wallet.HdAddress;
 import com.github.orogvany.bip32.wallet.HdEd25519KeyGenerator;
 import com.github.orogvany.bip32.wallet.HdKeyGenerator;
-import com.github.orogvany.bip32.wallet.key.HdPrivateKey;
-import com.github.orogvany.bip32.wallet.key.HdPublicKey;
-import com.github.orogvany.bip32.wallet.key.ed25519.HdEd25519PrivateKey;
-import com.github.orogvany.bip32.wallet.key.ed25519.HdEd25519PublicKey;
 import net.i2p.crypto.eddsa.EdDSAEngine;
 import net.i2p.crypto.eddsa.EdDSAPrivateKey;
 import net.i2p.crypto.eddsa.EdDSAPublicKey;
@@ -42,15 +38,15 @@ public class HdEd25519KeyGeneratorTest {
     public void testKeyGeneration() throws UnsupportedEncodingException, InvalidKeySpecException {
         byte[] seedBytes = Hex.decode("feeed1");
 
-        HdAddress<HdPrivateKey, HdPublicKey> generalMaster = generalGenerator.getAddressFromSeed(seedBytes, Network.mainnet, CoinType.bitcoin);
+        HdAddress generalMaster = generalGenerator.getAddressFromSeed(seedBytes, Network.mainnet, CoinType.bitcoin);
         byte[] masterSecret = generalMaster.getPrivateKey().getKeyData();
 
-        HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> address = hdKeyGenerator.getAddressFromSeed(Hex.encode(masterSecret), Network.mainnet);
+        HdAddress address = hdKeyGenerator.getAddressFromSeed(Hex.encode(masterSecret), Network.mainnet);
 
         EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName("ed25519");
 
-        EdDSAPrivateKey sk = new EdDSAPrivateKey(new EdDSAPrivateKeySpec(spec, address.getPrivateKey().getEd25519Key()));
-        EdDSAPublicKey pk = new EdDSAPublicKey(new EdDSAPublicKeySpec(address.getPublicKey().getEd25519Key(), spec));
+        EdDSAPrivateKey sk = new EdDSAPrivateKey(new EdDSAPrivateKeySpec(spec, address.getPrivateKey().getPrivateKey()));
+        EdDSAPublicKey pk = new EdDSAPublicKey(new EdDSAPublicKeySpec(address.getPublicKey().getPublicKey(), spec));
 
         String test = "Here's a message";
 
@@ -63,17 +59,17 @@ public class HdEd25519KeyGeneratorTest {
     @Test
     public void testChildKeyGeneration() throws UnsupportedEncodingException {
         byte[] seedBytes = Hex.decode("feeed1");
-        HdAddress<HdPrivateKey, HdPublicKey> generalMaster = generalGenerator.getAddressFromSeed(seedBytes, Network.mainnet, CoinType.bitcoin);
+        HdAddress generalMaster = generalGenerator.getAddressFromSeed(seedBytes, Network.mainnet, CoinType.bitcoin);
         byte[] masterSecret = generalMaster.getPrivateKey().getKeyData();
 
-        HdAddress<HdEd25519PrivateKey, HdEd25519PublicKey> address = hdKeyGenerator.getAddressFromSeed(Hex.encode(masterSecret), Network.mainnet);
+        HdAddress address = hdKeyGenerator.getAddressFromSeed(Hex.encode(masterSecret), Network.mainnet);
 
         address = hdKeyGenerator.getAddress(address,0, false);
 
         EdDSAParameterSpec spec = EdDSANamedCurveTable.getByName("ed25519");
 
-        EdDSAPrivateKey sk = new EdDSAPrivateKey(new EdDSAPrivateKeySpec(spec, address.getPrivateKey().getEd25519Key()));
-        EdDSAPublicKey pk = new EdDSAPublicKey(new EdDSAPublicKeySpec(address.getPublicKey().getEd25519Key(), spec));
+        EdDSAPrivateKey sk = new EdDSAPrivateKey(new EdDSAPrivateKeySpec(spec, address.getPrivateKey().getPrivateKey()));
+        EdDSAPublicKey pk = new EdDSAPublicKey(new EdDSAPublicKeySpec(address.getPublicKey().getPublicKey(), spec));
 
         String test = "Here's a message";
 
