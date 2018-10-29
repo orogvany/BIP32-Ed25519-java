@@ -55,7 +55,7 @@ public class MnemonicGenerator {
 
         //check the checksum
 
-        //TODO !
+
 
         String salt = "mnemonic" + password;
         return pbkdf2HmacSha512(words.trim().toCharArray(), salt.getBytes(Charset.forName("UTF-8")), 2048, 512);
