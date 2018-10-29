@@ -13,10 +13,8 @@ This project implements BIP-32 extending it with compatibility for Ed25519
 Current state:
 * BIP-32 implemented, Ed25519 works for SLIP-0100
 * Not using https://cardanolaunch.com/assets/Ed25519_BIP.pdf, decided on using SLIP-0010 due to ease of implementation and test vectors supplied.
-* BIP-44 utility methods exist
-
-TODO:
-* BIP-39 - Support for mnemonic codes (should be libs out there already)
+* BIP-44 (Paths for HD keys)
+* BIP-39 (Mnemonic keys)
 
 ## Compiling
 ```
