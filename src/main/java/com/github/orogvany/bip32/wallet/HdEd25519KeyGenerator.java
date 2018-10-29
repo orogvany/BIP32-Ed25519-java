@@ -110,7 +110,7 @@ public class HdEd25519KeyGenerator {
         publicKey.setChainCode(masterChainCode);
         publicKey.setKeyData(Secp256k1.serP(point));
 
-        return new HdAddress(privateKey, publicKey, CoinType.semux);
+        return new HdAddress(privateKey, publicKey, CoinType.semux, null);
     }
 
 
@@ -178,6 +178,6 @@ public class HdEd25519KeyGenerator {
         publicKey.setFingerprint(new byte[]{0, 0, 0, 0});
         publicKey.setChildNumber(new byte[]{0, 0, 0, 0});
 
-        return new HdAddress(privateKey, publicKey, CoinType.semux);
+        return new HdAddress(privateKey, publicKey, CoinType.semux, null);
     }
 }

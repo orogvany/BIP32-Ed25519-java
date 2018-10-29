@@ -17,11 +17,13 @@ public class HdAddress {
     private final HdPrivateKey privateKey;
     private final HdPublicKey publicKey;
     private final CoinType coinType;
+    private final String path;
 
-    public HdAddress(HdPrivateKey privateKey, HdPublicKey publicKey, CoinType coinType) {
+    public HdAddress(HdPrivateKey privateKey, HdPublicKey publicKey, CoinType coinType, String path) {
         this.privateKey = privateKey;
         this.publicKey = publicKey;
         this.coinType = coinType;
+        this.path = path;
     }
 
     public HdPrivateKey getPrivateKey() {
@@ -36,4 +38,7 @@ public class HdAddress {
         return coinType;
     }
 
+    public String getPath() {
+        return path;
+    }
 }

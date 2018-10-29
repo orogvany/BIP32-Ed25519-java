@@ -30,13 +30,14 @@ import java.util.Arrays;
 public class HdKeyGenerator {
 
     private static final EdDSAParameterSpec ED25519SPEC = EdDSANamedCurveTable.getByName("ed25519");
+    public static final String MASTER_PATH = "m";
 
     public HdAddress getAddressFromSeed(byte[] seed, Network network, CoinType coinType) {
 
         Curve curve = coinType.getCurve();
         HdPublicKey publicKey = new HdPublicKey();
         HdPrivateKey privateKey = new HdPrivateKey();
-        HdAddress address = new HdAddress(privateKey, publicKey, coinType);
+        HdAddress address = new HdAddress(privateKey, publicKey, coinType, MASTER_PATH);
 
         byte[] I;
         try {
@@ -136,7 +137,8 @@ public class HdKeyGenerator {
     public HdAddress getAddress(HdAddress parent, long child, boolean isHardened) {
         HdPrivateKey privateKey = new HdPrivateKey();
         HdPublicKey publicKey = new HdPublicKey();
-        HdAddress address = new HdAddress(privateKey, publicKey, parent.getCoinType());
+        HdAddress address = new HdAddress(privateKey, publicKey, parent.getCoinType(),
+                getPath(parent.getPath(), child, isHardened));
 
         if (isHardened) {
             child += 0x80000000;
@@ -214,5 +216,13 @@ public class HdKeyGenerator {
         }
 
         return address;
+    }
+
+    private String getPath(String parentPath, long child, boolean isHardened) {
+        if(parentPath == null)
+        {
+            parentPath = MASTER_PATH;
+        }
+        return parentPath + "/" + child + (isHardened ? "'":"");
     }
 }
