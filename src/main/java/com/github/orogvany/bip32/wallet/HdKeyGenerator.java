@@ -51,7 +51,7 @@ public class HdKeyGenerator {
 
         BigInteger masterSecretKey = HdUtil.parse256(IL);
 
-        //In case IL is 0 or ≥n, the master key is invalid.
+        //In case IL is 0 or >=n, the master key is invalid.
         if (curve != Curve.ed25519 && masterSecretKey.compareTo(BigInteger.ZERO) == 0 || masterSecretKey.compareTo(Secp256k1.getN()) > 0) {
             throw new CryptoException("The master key is invalid");
         }

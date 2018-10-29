@@ -22,7 +22,7 @@ public class VectorReader {
         List<Vector> vectors = new ArrayList<>();
         for (int i = 0; i < english.size(); i++) {
             ArrayNode v = (ArrayNode) english.get(i);
-            Vector vector = new Vector(Hex.decode(v.get(0).asText()),v.get(1).asText(), v.get(2).asText());
+            Vector vector = new Vector(Hex.decode(v.get(0).asText()), v.get(1).asText(), v.get(2).asText(), v.get(3).asText());
             vectors.add(vector);
         }
 

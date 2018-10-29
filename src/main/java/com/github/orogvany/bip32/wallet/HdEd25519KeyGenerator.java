@@ -137,7 +137,7 @@ public class HdEd25519KeyGenerator {
         byte[] ZR = Arrays.copyOfRange(Z, 32, 64);
 
 
-        //kL ← h8[ZL] + [kPL],
+        //kL <- h8[ZL] + [kPL]
         byte[] KP = parent.getPrivateKey().getPrivateKey();
 
         byte[] KPL = Arrays.copyOfRange(KP, 0, 32);

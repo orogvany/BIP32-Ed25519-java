@@ -3,28 +3,47 @@ package com.github.orogvany.bip39;
 import com.github.orogvany.bip32.crypto.BitUtil;
 import com.github.orogvany.bip32.crypto.Hash;
 
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.util.BitSet;
 
 /**
  * Generate and Process Mnemonic codes
  */
-public class MnemonicCode {
+public class MnemonicGenerator {
 
     public static final String SPACE_JP = "\u3000";
 
     private SecureRandom secureRandom = new SecureRandom();
 
-    public byte[] getSeedFromWordlist(String words, Language language) {
-        Dictionary dictionary;
-        try {
-            dictionary = new Dictionary(language);
-        } catch (IOException e) {
-            throw new IllegalArgumentException("Unknown dictionary");
+    public byte[] getSeedFromWordlist(String words, String password) {
+        if (password == null) {
+            password = "";
         }
 
-        return null;
+        String salt = "mnemonic" + password;
+        return pbkdf2HmacSha512(words.trim().toCharArray(), salt.getBytes(Charset.forName("UTF-8")), 2048, 512);
+    }
+
+    private byte[] pbkdf2HmacSha512(final char[] password, final byte[] salt, final int iterations,
+                                    final int keyLength) {
+
+        try {
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
+            PBEKeySpec spec = new PBEKeySpec(password, salt, iterations, keyLength);
+            SecretKey key = skf.generateSecret(spec);
+            byte[] res = key.getEncoded();
+            return res;
+
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String getWordlist(int entropyLength, Language language) {
@@ -53,7 +72,6 @@ public class MnemonicCode {
         int checksumLength = entropyLength / 32;
         byte[] hash = Hash.sha256(entropy);
 
-//        printBitSet();
         BitSet hashBitset = createBitset(hash);
         BitSet bitSet = createBitset(entropy);
 
@@ -103,6 +121,7 @@ public class MnemonicCode {
 
     /**
      * get a printable version of a bitset
+     *
      * @param bitset
      * @param length
      * @return
