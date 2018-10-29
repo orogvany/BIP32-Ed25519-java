@@ -22,10 +22,40 @@ public class MnemonicGenerator {
 
     private SecureRandom secureRandom = new SecureRandom();
 
-    public byte[] getSeedFromWordlist(String words, String password) {
+    public byte[] getSeedFromWordlist(String words, String password, Language language) {
+
+        Dictionary dictionary;
+        try {
+            dictionary = new Dictionary(language);
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Unknown dictionary");
+        }
+
         if (password == null) {
             password = "";
         }
+
+        //validate that things look alright
+        String[] wordsList = words.split(" ");
+        if (wordsList.length < 12) {
+            throw new IllegalArgumentException("Must be at least 12 words");
+        }
+        if (wordsList.length > 24) {
+            throw new IllegalArgumentException("Must be less than 24 words");
+        }
+
+        //check all the words are found
+        for(String word : wordsList) {
+            if(dictionary.indexOf(word.trim()) < 0)
+            {
+                throw new IllegalArgumentException("Unknown word: " + word);
+
+            }
+        }
+
+        //check the checksum
+
+        //TODO !
 
         String salt = "mnemonic" + password;
         return pbkdf2HmacSha512(words.trim().toCharArray(), salt.getBytes(Charset.forName("UTF-8")), 2048, 512);
@@ -164,6 +194,4 @@ public class MnemonicGenerator {
         }
         return ret;
     }
-
-
 }

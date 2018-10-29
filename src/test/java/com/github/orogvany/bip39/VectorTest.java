@@ -26,7 +26,7 @@ public class VectorTest {
         for (Vector vector : vectors) {
             String words = generator.getWordlist(vector.getEntropy(), Language.english);
             Assert.assertEquals(vector.getMnemonic(), words);
-            byte[] seed = generator.getSeedFromWordlist(words, password);
+            byte[] seed = generator.getSeedFromWordlist(words, password, Language.english);
             Assert.assertEquals(vector.getSeed(), Hex.encode(seed));
             HdAddress address = keyGenerator.getAddressFromSeed(seed, Network.mainnet, CoinType.bitcoin);
             Assert.assertEquals(vector.getHdKey(), Base58.encode(address.getPrivateKey().getKey()));
