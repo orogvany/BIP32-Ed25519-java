@@ -1,5 +1,6 @@
 package com.github.orogvany.bip39;
 
+import com.github.orogvany.bip32.crypto.BitUtil;
 import com.github.orogvany.bip32.crypto.Hash;
 
 import java.io.IOException;
@@ -10,6 +11,8 @@ import java.util.BitSet;
  * Generate and Process Mnemonic codes
  */
 public class MnemonicCode {
+
+    public static final String SPACE_JP = "\u3000";
 
     private SecureRandom secureRandom = new SecureRandom();
 
@@ -49,12 +52,14 @@ public class MnemonicCode {
         }
         int checksumLength = entropyLength / 32;
         byte[] hash = Hash.sha256(entropy);
-        BitSet hashBitset = BitSet.valueOf(hash);
 
-        BitSet bitSet = BitSet.valueOf(entropy);
-        BitSet checksum = hashBitset.get(256 - checksumLength, 256);
+//        printBitSet();
+        BitSet hashBitset = createBitset(hash);
+        BitSet bitSet = createBitset(entropy);
 
+        BitSet checksum = hashBitset.get(0, checksumLength);
         bitSet = append(checksum, bitSet, entropyLength);
+
         StringBuilder ret = new StringBuilder();
 
         int numWords = (entropyLength + checksumLength) / 11;
@@ -62,10 +67,9 @@ public class MnemonicCode {
             BitSet range = bitSet.get(i * 11, (i + 1) * 11);
             int wordIdx = 0;
             if (!range.isEmpty()) {
-                wordIdx = (int) range.toLongArray()[0];
+                wordIdx = getInt(range);
             }
             String word = dictionary.getWord(wordIdx);
-
             if (i > 0) {
                 ret.append(" ");
             }
@@ -74,6 +78,54 @@ public class MnemonicCode {
         }
 
         return ret.toString();
+    }
+
+    /**
+     * For some reason Bitset.valueOf() does not return correct data we
+     * expect.
+     *
+     * @param bytes
+     * @return
+     */
+    private BitSet createBitset(byte[] bytes) {
+        BitSet ret = new BitSet();
+        int offset = 0;
+        for (byte b : bytes) {
+            for (int i = 1; i < 9; i++) {
+                if (BitUtil.checkBit(b, i)) {
+                    ret.set(offset);
+                }
+                offset++;
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * get a printable version of a bitset
+     * @param bitset
+     * @param length
+     * @return
+     */
+    private String getBitString(BitSet bitset, int length) {
+        StringBuilder ret = new StringBuilder();
+        for (int i = 0; i < length; i++) {
+            ret.append(bitset.get(i) ? "1" : "0");
+        }
+        return ret.toString();
+    }
+
+    private int getInt(BitSet range) {
+
+        int ret = 0;
+        for (int i = 0; i < 11; i++) {
+
+            ret = ret << 1;
+            if (range.get(i)) {
+                ret |= 1;
+            }
+        }
+        return ret;
     }
 
     private BitSet append(BitSet a, BitSet b, int bLength) {

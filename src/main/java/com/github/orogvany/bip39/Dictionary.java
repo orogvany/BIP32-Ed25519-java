@@ -26,4 +26,8 @@ public class Dictionary {
     public String getWord(int wordIdx) {
         return words.get(wordIdx);
     }
+
+    public int indexOf(String word) {
+        return words.indexOf(word);
+    }
 }
