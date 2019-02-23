@@ -1,20 +1,20 @@
 package com.github.orogvany.bip39;
 
-import com.github.orogvany.bip32.crypto.BitUtil;
 import com.github.orogvany.bip32.crypto.Hash;
 
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
-import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 import java.util.BitSet;
+
+import static com.github.orogvany.bip32.crypto.BitSetUtil.*;
+import static com.github.orogvany.bip32.crypto.HmacSha512.pbkdf2HmacSha512;
 
 /**
  * Generate and Process Mnemonic codes
+ * <p>
+ * TODO - using bitset is probably more pain than it's worth.
  */
 public class MnemonicGenerator {
 
@@ -23,16 +23,23 @@ public class MnemonicGenerator {
     private SecureRandom secureRandom = new SecureRandom();
 
     public byte[] getSeedFromWordlist(String words, String password, Language language) {
+        if (password == null) {
+            password = "";
+        }
 
+        //check the words are valid (will throw exception if invalid)
+        getEntropy(words, language);
+
+        String salt = "mnemonic" + password;
+        return pbkdf2HmacSha512(words.trim().toCharArray(), salt.getBytes(Charset.forName("UTF-8")), 2048, 512);
+    }
+
+    protected byte[] getEntropy(String words, Language language) {
         Dictionary dictionary;
         try {
             dictionary = new Dictionary(language);
         } catch (IOException e) {
             throw new IllegalArgumentException("Unknown dictionary");
-        }
-
-        if (password == null) {
-            password = "";
         }
 
         //validate that things look alright
@@ -44,36 +51,27 @@ public class MnemonicGenerator {
             throw new IllegalArgumentException("Must be less than 24 words");
         }
 
-        //check all the words are found
-        for(String word : wordsList) {
-            if(dictionary.indexOf(word.trim()) < 0)
-            {
+        //check all the words are found and build entropy + checksum
+        BitSet bitSet = new BitSet();
+        for (int i = 0; i < wordsList.length; i++) {
+            String word = wordsList[i];
+            int code = dictionary.indexOf(word.trim());
+            bitSet = addCode(bitSet, code);
+            if (code < 0) {
                 throw new IllegalArgumentException("Unknown word: " + word);
 
             }
         }
-
-        //check the checksum
-
-
-
-        String salt = "mnemonic" + password;
-        return pbkdf2HmacSha512(words.trim().toCharArray(), salt.getBytes(Charset.forName("UTF-8")), 2048, 512);
-    }
-
-    private byte[] pbkdf2HmacSha512(final char[] password, final byte[] salt, final int iterations,
-                                    final int keyLength) {
-
-        try {
-            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA512");
-            PBEKeySpec spec = new PBEKeySpec(password, salt, iterations, keyLength);
-            SecretKey key = skf.generateSecret(spec);
-            byte[] res = key.getEncoded();
-            return res;
-
-        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-            throw new RuntimeException(e);
+        int csBits = (wordsList.length * 11) % 8;
+        //handle 8 bit cs, which is max
+        if (csBits == 0) {
+            csBits = 8;
         }
+        int entBytes = (wordsList.length * 11 - csBits) / 8;
+
+        byte[] bitSetBytes = createBytes(bitSet, wordsList.length * 11 / 8);
+        byte[] entropy = Arrays.copyOfRange(bitSetBytes, 0, entBytes);
+        return entropy;
     }
 
     public String getWordlist(int entropyLength, Language language) {
@@ -126,72 +124,5 @@ public class MnemonicGenerator {
         }
 
         return ret.toString();
-    }
-
-    /**
-     * For some reason Bitset.valueOf() does not return correct data we
-     * expect.
-     *
-     * @param bytes
-     * @return
-     */
-    private BitSet createBitset(byte[] bytes) {
-        BitSet ret = new BitSet();
-        int offset = 0;
-        for (byte b : bytes) {
-            for (int i = 1; i < 9; i++) {
-                if (BitUtil.checkBit(b, i)) {
-                    ret.set(offset);
-                }
-                offset++;
-            }
-        }
-        return ret;
-    }
-
-    /**
-     * get a printable version of a bitset
-     *
-     * @param bitset
-     * @param length
-     * @return
-     */
-    private String getBitString(BitSet bitset, int length) {
-        StringBuilder ret = new StringBuilder();
-        for (int i = 0; i < length; i++) {
-            ret.append(bitset.get(i) ? "1" : "0");
-        }
-        return ret.toString();
-    }
-
-    private int getInt(BitSet range) {
-
-        int ret = 0;
-        for (int i = 0; i < 11; i++) {
-
-            ret = ret << 1;
-            if (range.get(i)) {
-                ret |= 1;
-            }
-        }
-        return ret;
-    }
-
-    private BitSet append(BitSet a, BitSet b, int bLength) {
-
-        //shift A << bLenght
-        BitSet ret = shift(a, bLength);
-        ret.or(b);
-        return ret;
-    }
-
-    private BitSet shift(BitSet bitSet, int length) {
-        BitSet ret = new BitSet(bitSet.length() + length);
-        for (int i = 0; i < bitSet.length(); i++) {
-            if (bitSet.get(i)) {
-                ret.set(i + length);
-            }
-        }
-        return ret;
     }
 }
